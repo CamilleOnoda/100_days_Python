@@ -77,6 +77,9 @@ life = 6
 while not game_over:
     guess = input("\nChoose a letter: ").lower()
 
+    if guess in display:
+        print(f"You've already guessed the letter {guess}!")
+
     # If letter in word = replace the blank with the letter
     for position in range(word_length):
         letter = rand_word[position]
@@ -87,6 +90,7 @@ while not game_over:
     # If letter not in word = lose a life
     # If the user run out of life = Game Over. Game stops
     if guess not in rand_word:
+        print(f"You've guess the letter {guess}, this is not in the word! You lose a life!")
         life -= 1
         if life == 0:
             game_over = True
