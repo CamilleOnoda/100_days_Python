@@ -58,7 +58,7 @@ stages = ['''
 =========
 ''']
 
-words = ["rubicon", "starfield", "harry", "hokkaido"]
+words = ["rubicon", "starfield", "terminator", "hokkaido"]
 
 # Generate a random word from the list
 rand_word = random.choice(words)
@@ -75,6 +75,7 @@ for _ in range(word_length):
 game_over = False
 life = 6
 while not game_over:
+    print("Welcome to the Hangman game!\n")
     guess = input("\nChoose a letter: ").lower()
 
     if guess in display:
