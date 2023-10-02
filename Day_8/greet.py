@@ -7,7 +7,7 @@
 
 greet()"""
 
-# Paramater = name
+# Parameter = name
 def greet_with(name, location):
     print(f"Hello {name.capitalize()}")
     print(f"How do you do {name.capitalize()}?")
