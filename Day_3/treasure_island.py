@@ -9,7 +9,7 @@ if left_right != "left":
 elif left_right == "left":
     wait_swim = input("You come to a lake. There is an island in the middle of the lake."
                       f"Type 'wait' to wait for a boat. Type 'swim' to swim across: ").lower()
-    if wait_swim != "wait":
+    if wait_swim != "swim":
         print("Attacked by a trout! Game over!")
     elif wait_swim == "wait":
         color = input("You arrive at the island unharmed. There is a house with 3 doors."
