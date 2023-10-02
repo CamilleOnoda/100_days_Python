@@ -1,4 +1,4 @@
-# Round up a number = ceil() function
+# Round up a number = ceil() method
 # The ceil() function gets its name from the mathematical term ceiling, 
 # which describes the nearest integer that's greater than or equal to a given number.
 
