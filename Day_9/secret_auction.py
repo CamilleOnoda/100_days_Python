@@ -4,14 +4,17 @@ import os
 print(logo)
 
 bids = {}
+bid_history = {}
+
+
 def main():
     name = input("What is your name? ")
     bid_price = int(input("What is your bid? $"))
-    add_new_bid(name, bid_price)
+    add_new_bidder(name, bid_price)
     new_bidder()
 
 
-def add_new_bid(name, bid_price):
+def add_new_bidder(name, bid_price):
     bids[name] = bid_price
 
 
