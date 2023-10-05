@@ -62,10 +62,10 @@ def multiply(n1, n2):
 
 
 def divide(n1, n2):
-    if n2 == 0:
-        print("Division by zero is not allowed.")
-        return None
-    return n1 / n2
+    try:
+        n1 / n2
+    except ZeroDivisionError:
+        return "Division by zero is not allowed."
 
 
 def clear_console():
