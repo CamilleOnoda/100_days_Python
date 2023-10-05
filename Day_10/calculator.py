@@ -20,6 +20,7 @@ def main():
             "-": subtract,
             "*": multiply,
             "/": divide,
+            "**": exponent,
         }
         
         for operation in operations:
@@ -66,6 +67,10 @@ def divide(n1, n2):
         n1 / n2
     except ZeroDivisionError:
         return "Division by zero is not allowed."
+    
+
+def exponent(n1, n2):
+    return n1 ** n2
 
 
 def clear_console():
