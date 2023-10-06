@@ -1,13 +1,15 @@
 from art import logo
 import os
+import platform
 
+clear_command = 'cls' if platform.system() == 'Windows' else 'clear'
 
 print(logo)
 
 
 def main():
-    result = 0
     end_calculator = False
+    result = 0
     
     while not end_calculator:
         if result != 0:
@@ -32,15 +34,30 @@ def main():
         
         for operation, function in operations.items():
             if pick_op == operation:
-                result = function(num1, num2)
-                print(result)
-
-        continue_calc = input(f"Type 'y' to continue calculating with {result}, "
-                             "or type 'n' to restart a new calculation: ")
+                try:
+                    result = function(num1, num2)
+                    print(result)
+                except ZeroDivisionError as e:
+                    result = str(e)
+                    print(result)
+                    break
+        
+        # 'isinstance' is a built-in function that is used to check the type of an object. 
+        # If 'result' is a string, this condition will evaluate to True.
+        if isinstance(result, str) and "Division by zero is not allowed" in result:
+            continue_calc = input(f"Type 'n' to restart a new calculation,"
+                                " or type 'end' to end the program: ")
+        else:
+            continue_calc = input(f"Type 'y' to continue calculating with {result}, "
+                             "type 'n' to restart a new calculation,"
+                             " or type 'end' to end the program: ")
     
         if continue_calc == "y":
             clear_console()
-        else:
+        elif continue_calc == "n":
+            clear_console()
+            result = 0
+        elif continue_calc == "end":
             end_calculator = True
             print("See you next time!")
 
@@ -63,10 +80,9 @@ def multiply(n1, n2):
 
 
 def divide(n1, n2):
-    try:
-        n1 / n2
-    except ZeroDivisionError:
-        return "Division by zero is not allowed."
+    if n2 == 0:
+        raise ZeroDivisionError("Division by zero is not allowed.")
+    return n1 / n2
     
 
 def exponent(n1, n2):
@@ -74,7 +90,7 @@ def exponent(n1, n2):
 
 
 def clear_console():
-    os.system('cls')
+    os.system(clear_command)
 
 
 if __name__ == "__main__":
