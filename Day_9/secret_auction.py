@@ -12,7 +12,7 @@ bid_history = {}
 
 
 def main():
-    name = input("What is your name? ")
+    name = input("What is your name? ").title()
     bid_price = int(input("What is your bid? $"))
     add_new_bidder(name, bid_price)
     new_bidder()
