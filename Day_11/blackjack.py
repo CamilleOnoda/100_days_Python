@@ -1,12 +1,11 @@
 import random
 import os
+from art import logo
 
 
 def play_blackjack():
     clear_console()
-    print("####################################################")
-    print("############### Blackjack Game #####################")
-    print("####################################################")
+    print(logo)
 
     while True:
         cards = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]
