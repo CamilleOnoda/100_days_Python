@@ -5,9 +5,9 @@ from art import logo
 
 def play_blackjack():
     clear_console()
-    print(logo)
 
     while True:
+        print(logo)
         cards = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]
         user_hand = []
         computer_hand = []
