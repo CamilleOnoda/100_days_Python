@@ -55,6 +55,7 @@ def compare(a, b, guess):
         print(f"You're right! Current score: {score}.")
         return False
     else:
+        print(logo)
         print(f"You're wrong! Final score: {score}.")
         return True
 
