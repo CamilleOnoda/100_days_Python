@@ -9,9 +9,10 @@ MENU = {
     'latte': {
         'ingredients': {
             'water': 200,
-            'coffee':150,
+            'coffee':15,
             'milk': 24,
         },
+        'cost': 2.5
     },
     'cappuccino': {
         'ingredients': {
@@ -19,6 +20,7 @@ MENU = {
             'milk':100,
             'coffee': 24,
         },
+        'cost': 3.0
     },
 }
 
