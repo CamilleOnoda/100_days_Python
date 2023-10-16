@@ -66,7 +66,7 @@ def main():
             else:
                 resources["water"] -= cappuccino_amount_water
                 resources["coffee"] -= cappuccino_amount_coffee
-                resources["milk"] -= cappuccino_amount_coffee
+                resources["milk"] -= cappuccino_amount_milk
                 print(f"Water: {resources['water']}")
                 print(f"Coffee: {resources['coffee']}")
                 print(f"Milk: {resources['milk']}")
