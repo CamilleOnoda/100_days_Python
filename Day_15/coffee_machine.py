@@ -1,4 +1,4 @@
-from machine_requirements import resources, MENU
+from machine_requirements import resources, MENU, coins
 
 
 def main():
@@ -18,8 +18,69 @@ def main():
                     print(f"{resource.capitalize()}: {amount}g")
                 elif resource == "money":
                     print(f"{resource.capitalize()}: {amount}$")
+
+        elif order in {"espresso", "latte", "cappuccino"}:
+            #payment(order)
+            prepare_order(order)
             
-        if order == "espresso":
+
+def prepare_order(drink_type):
+    ingredients = MENU[drink_type]["ingredients"]
+    
+    for ingredient, amount in ingredients.items():
+        if resources[ingredient] < amount:
+            print(f"Sorry, there is enough {ingredient}.")
+            return
+        else:
+            resources[ingredient] -= amount
+    
+    payment(drink_type) 
+    print(f"Here is your {drink_type}. Enjoy!\n")
+
+
+def payment(drink_type):
+    amount_due = MENU[drink_type]["cost"]
+    amount_paid = 0
+
+    while amount_paid < amount_due:
+        print(f"Amount due: ${amount_due - amount_paid}")
+        for coin, value in coins.items():
+            coin_inserted = int(input(f"How many {coin}? "))
+            total = coin_inserted * value
+            amount_due = amount_due - total
+            amount_paid += total
+            
+            if total == amount_due:
+                return
+            elif amount_paid == amount_due:
+                return
+            elif amount_paid > amount_due:
+                change_owed = amount_paid - amount_due
+                print(f"Your change: ${abs(change_owed)}.")
+                return
+            else:
+                print(f"Amount due: ${amount_due}")
+            
+        if amount_paid == amount_due:
+            return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    """if order == "espresso":
             espresso_amount_water = MENU["espresso"]["ingredients"]["water"]
             espresso_amount_coffee = MENU["espresso"]["ingredients"]["coffee"]
 
@@ -69,9 +130,8 @@ def main():
                 resources["milk"] -= cappuccino_amount_milk
                 print(f"Water: {resources['water']}")
                 print(f"Coffee: {resources['coffee']}")
-                print(f"Milk: {resources['milk']}")
+                print(f"Milk: {resources['milk']}")"""                 
 
-            
 
 if __name__ == "__main__":
     main()
