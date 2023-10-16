@@ -22,6 +22,7 @@ MENU = {
         },
         'cost': 3.0
     },
+    
 }
 
 
@@ -34,8 +35,8 @@ resources = {
 
 
 coins = {
-    "quarter": 0.25,
-    "dime": 0.10,
-    "nickel": 0.05,
-    "penny": 0.01
+    "quarters": 0.25,
+    "dimes": 0.10,
+    "nickels": 0.05,
+    "pennies": 0.01,
 }

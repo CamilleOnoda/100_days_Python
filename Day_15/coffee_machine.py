@@ -39,29 +39,28 @@ def prepare_order(drink_type):
 
 
 def payment(drink_type):
-    amount_due = MENU[drink_type]["cost"]
+    drink_cost = MENU[drink_type]["cost"]
     amount_paid = 0
+    print(f"Amount due: ${round(drink_cost - amount_paid, 2)}")
 
-    while amount_paid < amount_due:
-        print(f"Amount due: ${amount_due - amount_paid}")
+    while amount_paid < drink_cost:
+        #print(f"Amount due: ${round(drink_cost - amount_paid, 2)}")
         for coin, value in coins.items():
             coin_inserted = int(input(f"How many {coin}? "))
             total = coin_inserted * value
-            amount_due = amount_due - total
             amount_paid += total
-            
-            if total == amount_due:
+            amount_left = drink_cost - amount_paid
+
+            if amount_paid == drink_cost:
                 return
-            elif amount_paid == amount_due:
-                return
-            elif amount_paid > amount_due:
-                change_owed = amount_paid - amount_due
-                print(f"Your change: ${abs(change_owed)}.")
+            elif amount_paid > drink_cost:
+                change_owed = amount_paid - drink_cost
+                print(f"Your change: ${round(change_owed, 2)}")
                 return
             else:
-                print(f"Amount due: ${amount_due}")
+                print(f"Amount due: ${round(amount_left, 2)}")
             
-        if amount_paid == amount_due:
+        if amount_paid == drink_cost:
             return
 
 
