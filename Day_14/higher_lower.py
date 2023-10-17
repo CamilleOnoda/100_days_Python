@@ -5,10 +5,12 @@ import os
 
 
 def main():
-    global end_game, score
+    global end_game, score, vowel_str
     end_game = False
     score = 0
-    #vowel = ['a', 'e', 'i', 'o', 'u']
+    vowel = ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U']
+    vowel_str = ''.join(vowel)
+
     print(logo)
 
     while not end_game:
@@ -25,16 +27,26 @@ def main():
 def random_choice():
     a = random.choice(data)
     b = random.choice(data)
-    
-    if 'United States' in a.values():
+    description_a = a['description']
+    description_b = b['description']
+
+    if 'United States' in a.values() and any(description_a.startswith(v) for v in vowel_str):
+        print(f"Compare A: {a['name']}, an {a['description']}, from the {a['country']}.")
+    elif 'United States' in a.values():
         print(f"Compare A: {a['name']}, a {a['description']}, from the {a['country']}.")
+    elif any(description_a.startswith(v) for v in vowel_str):
+        print(f"Compare A: {a['name']}, an {a['description']}, from {a['country']}.")
     else:
         print(f"Compare A: {a['name']}, a {a['description']}, from {a['country']}.")
 
     print(logo_2)
 
-    if 'United States' in b.values():
+    if 'United States' in b.values() and any(description_b.startswith(v) for v in vowel_str):
+        print(f"Against B: {b['name']}, an {b['description']}, from the {b['country']}.")
+    elif 'United States' in b.values():
         print(f"Against B: {b['name']}, a {b['description']}, from the {b['country']}.")
+    elif any(description_b.startswith(v) for v in vowel_str):
+        print(f"Against B: {b['name']}, an {b['description']}, from {b['country']}.")
     else:
         print(f"Against B: {b['name']}, a {b['description']}, from {b['country']}.")
     
