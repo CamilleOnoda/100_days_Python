@@ -7,8 +7,10 @@ def main():
     print(logo)
 
     while not turn_off:
+        print()
         order = input("What would you like (espresso/latte/cappuccino)?\n"
                       "Enter 'report' to see the current resources, or 'off' to stop the machine: ").lower()
+        print()
 
         if order == 'off':
             turn_off = True
