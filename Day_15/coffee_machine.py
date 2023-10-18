@@ -1,11 +1,14 @@
 from machine_requirements import resources, MENU, coins
+from art import logo
 
 
 def main():
     turn_off = False
+    print(logo)
 
     while not turn_off:
-        order = input("What would you like? (espresso/latte/cappuccino): ").lower()
+        order = input("What would you like (espresso/latte/cappuccino)?\n"
+                      "Enter 'report' to see the current resources, or 'off' to stop the machine: ").lower()
 
         if order == 'off':
             turn_off = True
