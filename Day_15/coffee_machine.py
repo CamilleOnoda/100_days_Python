@@ -34,7 +34,7 @@ def prepare_order(drink_type):
     
     for ingredient, amount in ingredients.items():
         if resources[ingredient] < amount:
-            print(f"Sorry, there is enough {ingredient}.")
+            print(f"Sorry, there is not enough {ingredient}.")
             return
         else:
             resources[ingredient] -= amount
