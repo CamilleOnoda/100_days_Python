@@ -86,7 +86,7 @@ def website_exists(website, lines):
     return None        
 
 
-def update_data(website, email, encrypted_password, lines):
+def update_data(website, email, password, lines):
     """If the data exists, ask the user if they want to update the information."""
     update = messagebox.askyesno(title=website, message=f"The website '{website}'"
                                             " already exists in the data file."
@@ -94,8 +94,7 @@ def update_data(website, email, encrypted_password, lines):
     if update:
         index = website_exists(website, lines)
         if index is not None:
-            decrypted_password = decrypt_data(encrypted_password)
-            lines[index] = f"{website} | {email} | {decrypted_password}\n"
+            lines[index] = f"{website} | {email} | {password}\n"
             with open("data.txt", "w") as file:
                 file.writelines(lines)
             clear_entries()
