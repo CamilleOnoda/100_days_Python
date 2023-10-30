@@ -11,17 +11,18 @@ def save():
     email = email_username_entry.get()
     password = password_entry.get()
 
-    validate = messagebox.askokcancel(title=website, message=f"Emai: {email} \n Password: {password} \n Do you want to save?")
-
     if not website or not email or not password:
         error_label.config(text="Please fill in all required information", fg="red")
-    elif validate:
-        with open("data.txt", "a") as file:
-            file.write(f"{website} | {email} | {password}\n")
-            website_entry.delete(0, END)
-            password_entry.delete(0, END)
+    else:
+        validate = messagebox.askokcancel(title=website, message=f"Emai: {email} \n Password: {password} \n Do you want to save?")
+        if validate:
+            with open("data.txt", "a") as file:
+                file.write(f"{website} | {email} | {password}\n")
+                website_entry.delete(0, END)
+                password_entry.delete(0, END)
 
         messagebox.showinfo(title=None, message="Data saved!")
+        error_label.config(text="")
 
 
 # User interface
