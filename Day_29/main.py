@@ -27,15 +27,38 @@ def save():
     if not website or not email or not password:
         error_label.config(text="Please fill in all required information", fg="red")
     else:
-        validate = messagebox.askokcancel(title=website, message=f"Website: {website} \n"
-                                          f" Emai: {email} \n Password: {password} \n Do you want to save?")
-        if validate:
-            with open("data.txt", "a") as file:
-                file.write(f"{website} | {email} | {password}\n")
-                website_entry.delete(0, END)
-                password_entry.delete(0, END)
-            messagebox.showinfo(title=None, message="Data saved!")
-            error_label.config(text="")
+        with open("data.txt", "r") as file:
+            lines = file.readlines()
+
+        website_exist = False
+        for x, line in enumerate(lines):
+            data = line.strip().split(" | ")
+            if data[0] == website:
+                website_exist = True
+                break
+
+        if website_exist:
+            update = messagebox.askyesno(title=website, message=f"The website '{website}'"
+                                        " already exists in the data file."
+                                        " Do you want to update its information?")
+            if update:
+                validate = messagebox.askokcancel(title=website, message=f"Website: {website} \n"
+                                        f" Emai: {email} \n Password: {password} \n Do you want to save?")
+                lines[x] = f"{website} | {email} | {password}\n"
+                with open("data.txt", "w") as file:
+                    file.writelines(lines)
+                messagebox.showinfo(title=None, message="Data updated!")
+            
+        else:
+            validate = messagebox.askokcancel(title=website, message=f"Website: {website} \n"
+                                        f" Emai: {email} \n Password: {password} \n Do you want to save?")
+            if validate:
+                with open("data.txt", "a") as file:
+                    file.write(f"{website} | {email} | {password}\n")
+                    website_entry.delete(0, END)
+                    password_entry.delete(0, END)
+                messagebox.showinfo(title=None, message="Data saved!")
+                error_label.config(text="")
 
 
 # -----------------------Generate random password-------------------------------
