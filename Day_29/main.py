@@ -16,10 +16,9 @@ canvas.create_image(130, 100, image=img)
 canvas.grid(column=1, row=0)
 
 
-# -----------------------Save data in a file------------------------------------
+# -----------------------Data processing-----------------------------------------
 def save():
-    global add_button
-
+    """Save data into a txt file."""
     website = website_entry.get()
     email = email_username_entry.get()
     password = password_entry.get()
@@ -27,28 +26,10 @@ def save():
     if not website or not email or not password:
         error_label.config(text="Please fill in all required information", fg="red")
     else:
-        with open("data.txt", "r") as file:
-            lines = file.readlines()
+        lines = read_data()
 
-        website_exist = False
-        for x, line in enumerate(lines):
-            data = line.strip().split(" | ")
-            if data[0] == website:
-                website_exist = True
-                break
-
-        if website_exist:
-            update = messagebox.askyesno(title=website, message=f"The website '{website}'"
-                                        " already exists in the data file."
-                                        " Do you want to update its information?")
-            if update:
-                validate = messagebox.askokcancel(title=website, message=f"Website: {website} \n"
-                                        f" Emai: {email} \n Password: {password} \n Do you want to save?")
-                lines[x] = f"{website} | {email} | {password}\n"
-                with open("data.txt", "w") as file:
-                    file.writelines(lines)
-                messagebox.showinfo(title=None, message="Data updated!")
-            
+        if website_exists(website, lines):
+            update_data(website, email, password, lines)
         else:
             validate = messagebox.askokcancel(title=website, message=f"Website: {website} \n"
                                         f" Emai: {email} \n Password: {password} \n Do you want to save?")
@@ -59,6 +40,36 @@ def save():
                     password_entry.delete(0, END)
                 messagebox.showinfo(title=None, message="Data saved!")
                 error_label.config(text="")
+
+
+def read_data():
+    """Read the txt file."""
+    with open("data.txt", "r") as file:
+        lines = file.readlines()
+    return lines
+
+
+def website_exists(website, lines):
+    """Verify if the data entered already exists."""
+    for x, line in enumerate(lines):
+        data = line.strip().split(" | ")
+        if data[0] == website:
+            return x
+    return None        
+
+
+def update_data(website, email, password, lines):
+    """If the data exists, ask the user if they want to update the information."""
+    update = messagebox.askyesno(title=website, message=f"The website '{website}'"
+                                            " already exists in the data file."
+                                            " Do you want to update its information?")
+    if update:
+        index = website_exists(website, lines)
+        if index is not None:
+            lines[index] = f"{website} | {email} | {password}\n"
+            with open("data.txt", "w") as file:
+                file.writelines(lines)
+            messagebox.showinfo(title=None, message="Data updated!")
 
 
 # -----------------------Generate random password-------------------------------
