@@ -11,10 +11,10 @@ class User:
     def __init__(self, username, password):
         self.username = username
         self.password = password
-        self.password_manager = PasswordManager()
+        self.password_manager = PasswordManager(self.username)
 
 class PasswordManager:
-    def __init__(self):
+    def __init__(self, username):
         self.window = Tk()
         self.window.title("Password Manager")
         self.window.config(padx=30, pady=30)
@@ -24,6 +24,8 @@ class PasswordManager:
         self.canvas.create_image(130, 100, image=img)
         self.canvas.image = img
         self.canvas.grid(column=1, row=0)
+
+        self.username = username
 
         # Initialize encryption key
         self.encryption_key = self.load_key()
@@ -100,14 +102,14 @@ class PasswordManager:
             lines = self.read_data()
 
             if self.website_exists(website, lines):
-                self.update_data(website, email, encrypted_password, lines)
+                self.update_data(self.username, website, email, encrypted_password, lines)
             else:
                 validate = messagebox.askokcancel(
                     title=website, message=f"Website: {website} \n Emai: {email} \n Password: {password} \n Do you want to save?"
                 )
                 if validate:
                     with open("data.txt", "a") as file:
-                        file.write(f"{website} | {email} | {encrypted_password}\n")
+                        file.write(f"{self.username} | {website} | {email} | {encrypted_password}\n")
                     self.clear_entries()
                     messagebox.showinfo(title=None, message="Data saved!")
                     self.error_label.config(text="")
@@ -124,11 +126,11 @@ class PasswordManager:
     def website_exists(self, website, lines):
         for x, line in enumerate(lines):
             data = line.strip().split(" | ")
-            if data[0].lower() == website:
+            if data[1].strip().lower() == website:
                 return x
         return None
 
-    def update_data(self, website, email, password, lines):
+    def update_data(self, username, website, email, password, lines):
         update = messagebox.askyesno(
             title=website,
             message=f"The website '{website}' already exists in the data file. Do you want to update its information?",
@@ -136,7 +138,7 @@ class PasswordManager:
         if update:
             index = self.website_exists(website, lines)
             if index is not None:
-                lines[index] = f"{website} | {email} | {password}\n"
+                lines[index] = f"{self.username} | {website} | {email} | {password}\n"
                 with open("data.txt", "w") as file:
                     file.writelines(lines)
                 self.clear_entries()
