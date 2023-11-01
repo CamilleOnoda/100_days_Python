@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import messagebox
+import cryptography
 from cryptography.fernet import Fernet
 import random
 import pyperclip
@@ -71,14 +72,24 @@ class PasswordManager:
     def load_key(self):
         key_file_path = "secret.key"
         if not os.path.isfile(key_file_path):
-            self.generate_key()
+            print("Encryption key file not found. Please generate the key first.")
+            return None
         with open(key_file_path, "rb") as key_file:
-            return key_file.read()
+            key = key_file.read()
+
+        if key is None:
+            print("Error: Encryption key is missing or invalid.")
+        
+        return key
+
 
     def generate_key(self):
         key = Fernet.generate_key()
         with open("secret.key", "wb") as key_file:
             key_file.write(key)
+        print("Generated key and stored securely")
+
+        self.generate_key()
 
     def encrypt_data(self, data):
         fernet = Fernet(self.encryption_key)
@@ -87,8 +98,12 @@ class PasswordManager:
 
     def decrypt_data(self, encrypted_data):
         fernet = Fernet(self.encryption_key)
-        decrypted_data = fernet.decrypt(encrypted_data).decode()
-        return decrypted_data
+        try:
+            decrypted_data = fernet.decrypt(encrypted_data).decode()
+            return decrypted_data
+        except cryptography.fernet.InvalidToken:
+            return "Invalid or corrupted data"
+
 
     def save(self):
         website = self.website_entry.get().lower()
@@ -109,6 +124,7 @@ class PasswordManager:
                 )
                 if validate:
                     with open("data.txt", "a") as file:
+                        file.write("Username | Website | Email | Encrypted password\n")
                         file.write(f"{self.username} | {website} | {email} | {encrypted_password}\n")
                     self.clear_entries()
                     messagebox.showinfo(title=None, message="Data saved!")
@@ -119,7 +135,12 @@ class PasswordManager:
         self.password_entry.delete(0, END)
 
     def read_data(self):
-        with open("data.txt", "r") as file:
+        file_path = "data.txt"
+        if not os.path.exists(file_path):
+            with open(file_path, "w"):
+                pass
+
+        with open(file_path, "r") as file:
             lines = file.readlines()
         return lines
 
@@ -154,12 +175,11 @@ class PasswordManager:
             password += random.choice(character)
         self.password_entry.insert(0, password)
 
-    def get_decrypted_password(self, website):
-        lines = self.read_data()
-        for line in lines:
+    def get_decrypted_password(self, website, lines):
+        for x, line in enumerate(lines):
             data = line.strip().split(" | ")
-            if data[0].lower() == website.lower():
-                encrypted_password = data[2][2:-1]
+            if len(data) >= 2 and data[1].strip().lower() == website:
+                encrypted_password = data[3]
                 decrypted_password = self.decrypt_data(encrypted_password)
                 return decrypted_password
 
@@ -167,7 +187,7 @@ class PasswordManager:
 
     def search_password(self):
         website = self.website_entry.get()
-        decrypted_password = self.get_decrypted_password(website)
+        decrypted_password = self.get_decrypted_password(website, self.read_data())
 
         if decrypted_password:
             pyperclip.copy(decrypted_password)
@@ -176,7 +196,7 @@ class PasswordManager:
             messagebox.showerror(title=None, message=f"Password for {website} not found or could not be decrypted.")
 
     def copy_password(self):
-        pyperclip.copy(self.generated_password.get())
+        pyperclip.copy(self.password_entry.get())
         messagebox.showinfo(title=None, message="Password copied to clipboard.")
 
     def run(self):
