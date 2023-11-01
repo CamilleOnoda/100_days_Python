@@ -6,6 +6,7 @@ import random
 import pyperclip
 import string
 import os
+import hashlib
 
 
 class User:
@@ -73,9 +74,10 @@ class PasswordManager:
         key_file_path = "secret.key"
         if not os.path.isfile(key_file_path):
             print("Encryption key file not found. Please generate the key first.")
-            return None
+            self.generate_key()
         with open(key_file_path, "rb") as key_file:
-            key = key_file.read()
+            key = key_file.read().strip()
+            print(f"Loaded key: {key}")
 
         if key is None:
             print("Error: Encryption key is missing or invalid.")
@@ -89,15 +91,18 @@ class PasswordManager:
             key_file.write(key)
         print("Generated key and stored securely")
 
-        self.generate_key()
 
     def encrypt_data(self, data):
         fernet = Fernet(self.encryption_key)
         encrypted_data = fernet.encrypt(data.encode())
+        print(self.encryption_key)
         return encrypted_data
 
+
     def decrypt_data(self, encrypted_data):
+        print(f"Decryption key before decryption: {self.encryption_key}")
         fernet = Fernet(self.encryption_key)
+        print(self.encryption_key)
         try:
             decrypted_data = fernet.decrypt(encrypted_data).decode()
             return decrypted_data
@@ -120,7 +125,7 @@ class PasswordManager:
                 self.update_data(self.username, website, email, encrypted_password, lines)
             else:
                 validate = messagebox.askokcancel(
-                    title=website, message=f"Website: {website} \n Emai: {email} \n Password: {password} \n Do you want to save?"
+                    title=website, message=f"Website: {website} \n Email: {email} \n Password: {password} \n Do you want to save?"
                 )
                 if validate:
                     with open("data.txt", "a") as file:
@@ -180,7 +185,9 @@ class PasswordManager:
             data = line.strip().split(" | ")
             if len(data) >= 2 and data[1].strip().lower() == website:
                 encrypted_password = data[3]
+                print(f"Encrypted Password: {encrypted_password}")
                 decrypted_password = self.decrypt_data(encrypted_password)
+                print(f"Decrypted Password: {decrypted_password}")
                 return decrypted_password
 
         return None
