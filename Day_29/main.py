@@ -6,7 +6,6 @@ import random
 import pyperclip
 import string
 import os
-import hashlib
 
 
 class User:
@@ -14,6 +13,7 @@ class User:
         self.username = username
         self.password = password
         self.password_manager = PasswordManager(self.username)
+
 
 class PasswordManager:
     def __init__(self, username):
@@ -34,6 +34,7 @@ class PasswordManager:
 
         # Create and configure UI elements
         self.create_ui()
+
 
     def create_ui(self):
         self.website_label = Label(text="Website:")
@@ -70,6 +71,7 @@ class PasswordManager:
         self.error_label = Label(text="", fg="red")
         self.error_label.grid(column=1, row=5)
 
+
     def load_key(self):
         key_file_path = "secret.key"
         if not os.path.isfile(key_file_path):
@@ -80,8 +82,7 @@ class PasswordManager:
             print(f"Loaded key: {key}")
 
         if key is None:
-            print("Error: Encryption key is missing or invalid.")
-        
+            print("Error: Encryption key is missing or invalid.")       
         return key
 
 
@@ -129,15 +130,16 @@ class PasswordManager:
                 )
                 if validate:
                     with open("data.txt", "a") as file:
-                        file.write("Username | Website | Email | Encrypted password\n")
                         file.write(f"{self.username} | {website} | {email} | {encrypted_password}\n")
                     self.clear_entries()
                     messagebox.showinfo(title=None, message="Data saved!")
                     self.error_label.config(text="")
 
+
     def clear_entries(self):
         self.website_entry.delete(0, END)
         self.password_entry.delete(0, END)
+
 
     def read_data(self):
         file_path = "data.txt"
@@ -149,12 +151,14 @@ class PasswordManager:
             lines = file.readlines()
         return lines
 
+
     def website_exists(self, website, lines):
         for x, line in enumerate(lines):
             data = line.strip().split(" | ")
             if data[1].strip().lower() == website:
                 return x
         return None
+
 
     def update_data(self, username, website, email, password, lines):
         update = messagebox.askyesno(
@@ -170,6 +174,7 @@ class PasswordManager:
                 self.clear_entries()
                 messagebox.showinfo(title=None, message="Data updated!")
 
+
     def rand_pass_gen(self):
         password = ""
         password_len = int(self.password_len.get())
@@ -179,6 +184,7 @@ class PasswordManager:
         for _ in range(password_len):
             password += random.choice(character)
         self.password_entry.insert(0, password)
+
 
     def get_decrypted_password(self, website, lines):
         for x, line in enumerate(lines):
@@ -192,6 +198,7 @@ class PasswordManager:
 
         return None
 
+
     def search_password(self):
         website = self.website_entry.get()
         decrypted_password = self.get_decrypted_password(website, self.read_data())
@@ -202,12 +209,15 @@ class PasswordManager:
         else:
             messagebox.showerror(title=None, message=f"Password for {website} not found or could not be decrypted.")
 
+
     def copy_password(self):
         pyperclip.copy(self.password_entry.get())
         messagebox.showinfo(title=None, message="Password copied to clipboard.")
 
+
     def run(self):
         self.window.mainloop()
+
 
 class PasswordPrompt:
     def __init__(self):
@@ -230,6 +240,7 @@ class PasswordPrompt:
         self.password_submit_password = Button(self.password_prompt, text="Submit", command=self.check_credentials)
         self.password_submit_password.grid(column=1, row=3)
 
+
     def check_credentials(self):
         entered_username = self.username_entry.get()
         entered_password = self.password_prompt_entry.get()
@@ -241,8 +252,10 @@ class PasswordPrompt:
             self.credentials_error = Label(text="Incorrect username or password", fg="red")
             self.credentials_error.grid(column=1, row=4)
 
+
     def run(self):
         self.password_prompt.mainloop()
+
 
 if __name__ == "__main__":
     password_prompt = PasswordPrompt()
