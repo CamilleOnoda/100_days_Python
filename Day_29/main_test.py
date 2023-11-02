@@ -5,6 +5,7 @@ import random
 import pyperclip
 import string
 import os
+import json
 
 
 # -----------------------User interface-----------------------------------------
@@ -47,21 +48,20 @@ def save():
         error_label.config(text="Please fill in all required information", fg="red")
     else:
         encrypted_password = encrypt_data(password, encryption_key)
+        data = read_data()
 
-        lines = read_data()
+        if update_data(data, website, email, encrypted_password):
+            clear_entries()
+            messagebox.showinfo(title=None, message="Data saved!")
+            error_label.config(text="")
 
-        if website_exists(website, lines):
-            update_data(website, email, encrypted_password, lines)
         else:
             validate = messagebox.askokcancel(title=website, message=f"Website: {website} \n"
                                         f" Email: {email} \n Password: {password} \n Do you want to save?")
             if validate:
-                with open("data.txt", "a") as file:
-                    file.write(f"{website.lower()} | {email} | {encrypted_password}\n")
-                clear_entries()
-                messagebox.showinfo(title=None, message="Data saved!")
-                error_label.config(text="")
-
+                with open("data.json", "w") as file:
+                    json.dump(data, file, indent=4, default=lambda x: x.decode() if isinstance(x, bytes) else x)
+                
 
 def clear_entries():
     website_entry.delete(0, END)
@@ -69,37 +69,33 @@ def clear_entries():
 
 
 def read_data():
-    """Read the txt file."""
-    with open("data.txt", "r") as file:
-        lines = file.readlines()
-    lines = [line.strip() for line in lines]
-    return lines
+    """Read the json file."""
+    try:
+        with open("data.json", "r") as file:
+            data = json.load(file)
+        return data
+    except (FileNotFoundError, json.JSONDecodeError):
+        data = {}
+        with open("data.json", "w") as file:
+            json.dump(data, file, indent=4)
+        return data
 
 
-def website_exists(website, lines):
-    """Verify if the data entered already exists."""
-    for x, line in enumerate(lines):
-        data = line.strip().split(" | ")
-        print(data)
-        if len(data) >= 2 and data[0].strip().lower() == website.lower().strip():
-            return x
-    return None        
-
-
-def update_data(website, email, password, lines):
-    """If the data exists, ask the user if they want to update the information."""
-    update = messagebox.askyesno(title=website, message=f"The website '{website}'"
+def update_data(data, website, email, encrypted_password):
+    """If the data exists, ask the user if they want to update the information. Otherwise, create a new entry."""
+    if website in data:
+        update = messagebox.askyesno(title=website, message=f"The website '{website}'"
                                             " already exists in the data file."
                                             " Do you want to update its information?")
-    if update:
-        index = website_exists(website, lines)
-        if index is not None:
-            lines[index] = f"{website} | {email} | {password}\n"
-            with open("data.txt", "w") as file:
-                file.writelines(lines)
-            clear_entries()
-            messagebox.showinfo(title=None, message="Data updated!")
-    
+        if update:
+            data[website] = {"email": email, "password": encrypted_password}
+    else:
+        data[website] = {"email": email, "password": encrypted_password}
+
+    with open("data.json", "w") as file:
+        json.dump(data, file, indent=4, default=lambda x: x.decode() if isinstance(x, bytes) else x)
+    return True
+
 
 # -----------------------Generate random password-------------------------------
 # -----------------------Get the length of the password-------------------------
@@ -117,20 +113,10 @@ def randPassGen():
     generated_password.set(password)
 
 
-def get_decrypted_password(website):
-    lines = read_data()
-    for line in lines:
-        data = line.strip().split(" | ")
-        if data[0].lower() == website.lower():
-            encrypted_password = data[2][2:-1]  # Extract the encrypted password from the line
-            decrypted_password = decrypt_data(encrypted_password, encryption_key)
-            return decrypted_password
-
-    return None  # Return None if the website is not found
-
 def search_password():
     website = website_entry.get().lower()
-    decrypted_password = get_decrypted_password(website)
+    data = read_data()
+    decrypted_password = get_decrypted_password(website, data)
     
     if decrypted_password:
         pyperclip.copy(decrypted_password)
@@ -138,6 +124,14 @@ def search_password():
     else:
         messagebox.showerror(title=None, message=f"Password for {website} not found or could not be decrypted.")
 
+
+def get_decrypted_password(website, data):
+    if website in data:
+        encrypted_password = data[website]["password"]
+        decrypted_password = decrypt_data(encrypted_password, encryption_key)
+        return decrypted_password
+    
+    return None
 
 # -----------------------Copy to clipboard--------------------------------------
 def copy_password():
