@@ -36,8 +36,8 @@ def load_key():
 
 encryption_key = load_key()
 
-# -----------------------Data processing-----------------------------------------
 
+# -----------------------Data processing-----------------------------------------
 def save():
     """Save data into a txt file."""
     website = website_entry.get().lower().strip()
@@ -50,17 +50,10 @@ def save():
         encrypted_password = encrypt_data(password, encryption_key)
         data = read_data()
 
-        if update_data(data, website, email, encrypted_password):
+        if update_create(data, website, email, encrypted_password):
             clear_entries()
             messagebox.showinfo(title=None, message="Data saved!")
             error_label.config(text="")
-
-        else:
-            validate = messagebox.askokcancel(title=website, message=f"Website: {website} \n"
-                                        f" Email: {email} \n Password: {password} \n Do you want to save?")
-            if validate:
-                with open("data.json", "w") as file:
-                    json.dump(data, file, indent=4, default=lambda x: x.decode() if isinstance(x, bytes) else x)
                 
 
 def clear_entries():
@@ -69,7 +62,7 @@ def clear_entries():
 
 
 def read_data():
-    """Read the json file."""
+    """Read the json file. If it doesn't exist, it creates a new JSON dict."""
     try:
         with open("data.json", "r") as file:
             data = json.load(file)
@@ -81,36 +74,24 @@ def read_data():
         return data
 
 
-def update_data(data, website, email, encrypted_password):
-    """If the data exists, ask the user if they want to update the information. Otherwise, create a new entry."""
+def update_create(data, website, email, encrypted_password):
+    """If the data exists, ask the user if they want to update the information. Else, create a new entry."""
     if website in data:
         update = messagebox.askyesno(title=website, message=f"The website '{website}'"
                                             " already exists in the data file."
                                             " Do you want to update its information?")
         if update:
             data[website] = {"email": email, "password": encrypted_password}
+    
     else:
-        data[website] = {"email": email, "password": encrypted_password}
-
-    with open("data.json", "w") as file:
-        json.dump(data, file, indent=4, default=lambda x: x.decode() if isinstance(x, bytes) else x)
+        create = messagebox.askokcancel(title=website, message=f"Website: {website} \n"
+                                        f" Email: {email} \n Do you want to save?")
+        if create:
+            data[website] = {"email": email, "password": encrypted_password}
+        with open("data.json", "w") as file:
+            json.dump(data, file, indent=4, default=lambda x: x.decode() if isinstance(x, bytes) else x)
+    
     return True
-
-
-# -----------------------Generate random password-------------------------------
-# -----------------------Get the length of the password-------------------------
-password_len = IntVar()
-length = Spinbox(from_= 6, to_ = 15, textvariable=password_len)
-length.grid(column=2, row=4)
-
-generated_password = StringVar()
-combination = [string.punctuation, string.ascii_uppercase, string.digits, string.ascii_lowercase]
-def randPassGen():
-    password = ""
-    for char in range(password_len.get()):
-        char = random.choice(combination)
-        password = password + random.choice(char)
-    generated_password.set(password)
 
 
 def search_password():
@@ -132,6 +113,37 @@ def get_decrypted_password(website, data):
         return decrypted_password
     
     return None
+
+
+def delete_website():
+    website = website_entry.get().lower()
+    data = read_data()
+    delete = messagebox.askokcancel(title=website, message=f"Do you want to delete information for: {website}?")
+    if delete:
+        if website in data:
+            del data[website]
+            with open("data.json", "w") as file:
+                json.dump(data, file, indent=4)
+            messagebox.showinfo(title=None, message=f"Information for: {website} has been deleted.")
+        else:
+            messagebox.showerror(title=None, message=f"Information for: {website} not found.")
+
+
+# -----------------------Generate random password-------------------------------
+# -----------------------Get the length of the password-------------------------
+password_len = IntVar()
+length = Spinbox(from_= 6, to_ = 15, textvariable=password_len)
+length.grid(column=2, row=4)
+
+generated_password = StringVar()
+combination = [string.punctuation, string.ascii_uppercase, string.digits, string.ascii_lowercase]
+def randPassGen():
+    password = ""
+    for char in range(password_len.get()):
+        char = random.choice(combination)
+        password = password + random.choice(char)
+    generated_password.set(password)
+
 
 # -----------------------Copy to clipboard--------------------------------------
 def copy_password():
@@ -183,6 +195,8 @@ clipboard = Button(text="Copy to clipboard", command=copy_password)
 clipboard.grid(column=1, row=4, padx=(0,62))
 search_button = Button(text="Search Password", command=search_password)
 search_button.grid(column=2, row=7, padx=(0,10))
+delete_button = Button(text="Delete Website", command=delete_website)
+delete_button.grid(column=2, row=8, padx=(0,10))
 
 
 # -----------------------Error label--------------------------------------------
