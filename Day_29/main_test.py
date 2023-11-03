@@ -1,8 +1,6 @@
 from tkinter import *
-from tkinter import messagebox, font
-from turtle import width
+from tkinter import messagebox
 from cryptography.fernet import Fernet
-from PIL import Image, ImageTk
 import random
 import pyperclip
 import string
