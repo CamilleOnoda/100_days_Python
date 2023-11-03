@@ -1,6 +1,8 @@
 from tkinter import *
-from tkinter import messagebox
+from tkinter import messagebox, font
+from turtle import width
 from cryptography.fernet import Fernet
+from PIL import Image, ImageTk
 import random
 import pyperclip
 import string
@@ -12,10 +14,10 @@ import json
 window = Tk()
 window.title("Password Manager")
 window.config(padx=30, pady=30)
-canvas = Canvas(width=200,height=200)
 img = PhotoImage(file="logo.png")
 window.iconphoto(False, img)
-canvas.create_image(130, 100, image=img)
+canvas = Canvas(width=350,height=300)
+canvas.create_image(175, 120, image=img)
 canvas.grid(column=1, row=0)
 
 
@@ -132,8 +134,8 @@ def delete_website():
 # -----------------------Generate random password-------------------------------
 # -----------------------Get the length of the password-------------------------
 password_len = IntVar()
-length = Spinbox(from_= 6, to_ = 15, textvariable=password_len)
-length.grid(column=2, row=4)
+length = Spinbox(from_= 6, to_= 12, textvariable=password_len, width=22)
+length.grid(column=0, row=5, ipady=2, columnspan=2)
 
 generated_password = StringVar()
 combination = [string.punctuation, string.ascii_uppercase, string.digits, string.ascii_lowercase]
@@ -165,38 +167,38 @@ def decrypt_data(encrypted_data, key):
 
 
 # -----------------------Labels-------------------------------------------------
-website_label = Label(text="Website:")
-website_label.grid(column=0, row=1)
-email_username_label = Label(text="Email/Username:")
-email_username_label.grid(column=0, row=2)
-password_label = Label(text="Random Password:")
-password_label.grid(column=0, row=3)
-password_length_label = Label(text="Password length (6-15)")
-password_length_label.grid(column=2, row=3)
+website_label = Label(text="Website", font=('Times',12))
+website_label.grid(column=0, row=1,sticky=W)
+email_username_label = Label(text="Email/Username", font=('Times',12))
+email_username_label.grid(column=0, row=3,sticky=W)
+password_label = Label(text="Random Password", font=('Times',12))
+password_label.grid(column=0, row=4,sticky=W)
+password_length_label = Label(text="Password length (6 - 12)", font=('Times',12))
+password_length_label.grid(column=0, row=5,sticky=W)
 
 
 # -----------------------Entries------------------------------------------------
 website_entry = Entry(width=50)
-website_entry.grid(column=1,row=1, columnspan=2)
+website_entry.grid(column=1,row=1)
 website_entry.focus()
 email_username_entry = Entry(width=50)
-email_username_entry.grid(column=1, row=2, columnspan=2)
+email_username_entry.grid(column=1, row=3)
 email_username_entry.insert(0, "info@camilleonoda.com")
-password_entry = Entry(textvariable=generated_password, width=28)
-password_entry.grid(column=1, row=3)
+password_entry = Entry(textvariable=generated_password, width=50)
+password_entry.grid(column=1, row=4)
 
 
 # -----------------------Buttons------------------------------------------------
-generate_password_button = Button(text="Generate Password", command=randPassGen)
-generate_password_button.grid(column=2, row=5, padx=(0,10))
-add_button = Button(text="Add", command=save)
-add_button.grid(column=2, row=6, ipadx=5, padx=(0,80))
-clipboard = Button(text="Copy to clipboard", command=copy_password)
-clipboard.grid(column=1, row=4, padx=(0,62))
-search_button = Button(text="Search Password", command=search_password)
-search_button.grid(column=2, row=7, padx=(0,10))
-delete_button = Button(text="Delete Website", command=delete_website)
-delete_button.grid(column=2, row=8, padx=(0,10))
+generate_password_button = Button(text="Generate a password", font=('Times',12), command=randPassGen)
+generate_password_button.grid(column=1, row=6, sticky=W, padx=(24,0))
+save_button = Button(text="Save", font=('Times',12), command=save)
+save_button.grid(column=1, row=8, sticky=W, padx=(24,0))
+clipboard = Button(text="Copy to clipboard", font=('Times',12), command=copy_password)
+clipboard.grid(column=1, row=7, sticky=W, padx=(24,0))
+search_button = Button(text="Search Password", width=12, font=('Times',12), command=search_password)
+search_button.grid(column=2, row=2)
+delete_button = Button(text="Delete Website", width=12, font=('Times',12), command=delete_website)
+delete_button.grid(column=2, row=1)
 
 
 # -----------------------Error label--------------------------------------------
