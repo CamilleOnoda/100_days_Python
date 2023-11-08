@@ -14,8 +14,8 @@ window.title("Password Manager")
 window.config(padx=30, pady=30)
 img = PhotoImage(file="logo.png")
 window.iconphoto(False, img)
-canvas = Canvas(width=350,height=300)
-canvas.create_image(175, 120, image=img)
+canvas = Canvas(width=300,height=200)
+canvas.create_image(150, 100, image=img)
 canvas.grid(column=1, row=0)
 
 
@@ -50,9 +50,14 @@ def save():
         encrypted_password = encrypt_data(password, encryption_key)
         data = read_data()
 
-        if update_create(data, website, email, encrypted_password):
+        if website in data:
+            update(data, website, email, encrypted_password)
             clear_entries()
-            messagebox.showinfo(title=None, message="Data saved!")
+            error_label.config(text="")
+
+        else:
+            create(data, website, email, encrypted_password)
+            clear_entries()
             error_label.config(text="")
                 
 
@@ -74,27 +79,33 @@ def read_data():
         return data
 
 
-def update_create(data, website, email, encrypted_password):
-    """If the data exists, ask the user if they want to update the information. Else, create a new entry."""
+def create(data, website, email, encrypted_password):
+    """If the data doesn't exist, ask the user if they want to create a new entry."""
+    create = messagebox.askokcancel(title=website, message=f"Website: {website} \n"
+                                        f" Email: {email} \n Do you want to save?")
+    if create:
+        data[website] = {"email": email, "password": encrypted_password}
+    with open("data.json", "w") as file:
+        json.dump(data, file, indent=4, default=lambda x: x.decode() if isinstance(x, bytes) else x) 
+        messagebox.showinfo(title=None, message="New entry created!")  
+    return data
+
+
+def update(data, website, email, encrypted_password):
+    """If the data exists, ask the user if they want to update the information."""
     if website in data:
         update = messagebox.askyesno(title=website, message=f"The website '{website}'"
                                             " already exists in the data file."
                                             " Do you want to update its information?")
-        if update:
+        if update == True:
             data[website] = {"email": email, "password": encrypted_password}
-    
-    else:
-        create = messagebox.askokcancel(title=website, message=f"Website: {website} \n"
-                                        f" Email: {email} \n Do you want to save?")
-        if create:
-            data[website] = {"email": email, "password": encrypted_password}
-        with open("data.json", "w") as file:
-            json.dump(data, file, indent=4, default=lambda x: x.decode() if isinstance(x, bytes) else x)
-    
-    return True
-
+            with open("data.json", "w") as file:
+                json.dump(data, file, indent=4, default=lambda x: x.decode() if isinstance(x, bytes) else x)
+            messagebox.showinfo(title=None, message="Data updated!")
+    return data
 
 def search_password():
+    """The user enters the name of a website and retrieves the decrypted password."""
     website = website_entry.get().lower()
     data = read_data()
     decrypted_password = get_decrypted_password(website, data)
@@ -107,6 +118,7 @@ def search_password():
 
 
 def get_decrypted_password(website, data):
+    """Decrypt the password using the encryption key"""
     if website in data:
         encrypted_password = data[website]["password"]
         decrypted_password = decrypt_data(encrypted_password, encryption_key)
@@ -116,6 +128,7 @@ def get_decrypted_password(website, data):
 
 
 def delete_website():
+    """The user can delete all data associated with a website."""
     website = website_entry.get().lower()
     data = read_data()
     delete = messagebox.askokcancel(title=website, message=f"Do you want to delete information for: {website}?")
