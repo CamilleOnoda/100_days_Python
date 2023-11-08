@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import messagebox
+from turtle import clear
 from cryptography.fernet import Fernet
 import random
 import pyperclip
@@ -38,7 +39,7 @@ encryption_key = load_key()
 
 
 # -----------------------Data processing-----------------------------------------
-def save():
+def main():
     """Save data into a txt file."""
     website = website_entry.get().lower().strip()
     email = email_username_entry.get()
@@ -49,20 +50,14 @@ def save():
     else:
         encrypted_password = encrypt_data(password, encryption_key)
         data = read_data()
-
-        if website in data:
-            update(data, website, email, encrypted_password)
-            clear_entries()
-            error_label.config(text="")
-
-        else:
-            create(data, website, email, encrypted_password)
-            clear_entries()
-            error_label.config(text="")
+        create_or_update(data, website, email, encrypted_password)
+        clear_entries()
+        error_label.config(text="")
                 
 
 def clear_entries():
     website_entry.delete(0, END)
+    email_username_entry.delete(0, END)
     password_entry.delete(0, END)
 
 
@@ -73,73 +68,103 @@ def read_data():
             data = json.load(file)
         return data
     except (FileNotFoundError, json.JSONDecodeError):
-        data = {}
-        with open("data.json", "w") as file:
-            json.dump(data, file, indent=4)
+        data = []
         return data
 
 
-def create(data, website, email, encrypted_password):
-    """If the data doesn't exist, ask the user if they want to create a new entry."""
-    create = messagebox.askokcancel(title=website, message=f"Website: {website} \n"
-                                        f" Email: {email} \n Do you want to save?")
-    if create:
-        data[website] = {"email": email, "password": encrypted_password}
+def save_data(data):
     with open("data.json", "w") as file:
-        json.dump(data, file, indent=4, default=lambda x: x.decode() if isinstance(x, bytes) else x) 
-        messagebox.showinfo(title=None, message="New entry created!")  
+        json.dump(data, file, indent=4, default=lambda x: x.decode() if isinstance(x, bytes) else x)
+
+
+def create_or_update(data, website, email, encrypted_password):
+    website = website_entry.get().lower()
+    email = email_username_entry.get().lower()
+
+    entry_found = False
+
+    for entry in data:
+        if entry["website"] == website and entry["email"] == email:
+            update_password = messagebox.askyesno(title=website, message=f"The website '{website}'"
+                                        " already exists in the data file for the provided email."
+                                            " Do you want to update the password?")
+            if update_password:
+                entry["password"] = encrypted_password
+                save_data(data)
+                messagebox.showinfo(title=None, message="Password updated!")
+            entry_found = True
+            break
+
+        elif entry["website"] == website and entry["email"] != email:
+            update_info = messagebox.askyesno(title=website, message=f"The website '{website}'"
+                                        " already exists in the data file."
+                                            " Do you want to add another entry?")
+            if update_info:
+                data.append({"website": website, "email": email, "password": encrypted_password})
+                save_data(data)
+                messagebox.showinfo(title=None, message="Password updated!")
+            entry_found = True
+            break
+
+    if not entry_found:
+        append_entry = messagebox.askyesno(title=website, message=f"Do you want to add a new entry?")
+        if append_entry:
+            data.append({"website": website, "email": email, "password": encrypted_password})
+            save_data(data)
+            clear_entries()
+            messagebox.showinfo(title=None, message="New entry added!")
+
     return data
 
-
-def update(data, website, email, encrypted_password):
-    """If the data exists, ask the user if they want to update the information."""
-    if website in data:
-        update = messagebox.askyesno(title=website, message=f"The website '{website}'"
-                                            " already exists in the data file."
-                                            " Do you want to update its information?")
-        if update == True:
-            data[website] = {"email": email, "password": encrypted_password}
-            with open("data.json", "w") as file:
-                json.dump(data, file, indent=4, default=lambda x: x.decode() if isinstance(x, bytes) else x)
-            messagebox.showinfo(title=None, message="Data updated!")
-    return data
-
+ 
 def search_password():
     """The user enters the name of a website and retrieves the decrypted password."""
     website = website_entry.get().lower()
-    data = read_data()
-    decrypted_password = get_decrypted_password(website, data)
+    email = email_username_entry.get().lower()
     
-    if decrypted_password:
-        pyperclip.copy(decrypted_password)
-        messagebox.showinfo(title=None, message=f"Password for {website} copied to clipboard.")
+    if not email:
+        error_label.config(text="Please enter an email address", fg="red")
     else:
-        messagebox.showerror(title=None, message=f"Password for {website} not found or could not be decrypted.")
-
-
-def get_decrypted_password(website, data):
-    """Decrypt the password using the encryption key"""
-    if website in data:
-        encrypted_password = data[website]["password"]
-        decrypted_password = decrypt_data(encrypted_password, encryption_key)
-        return decrypted_password
+        data = read_data()
+        decrypted_password = get_decrypted_password(website, email, data)
     
+        if decrypted_password:
+            pyperclip.copy(decrypted_password)
+            messagebox.showinfo(title=None, message=f"Password for website: {website}\nemail: {email}\ncopied to clipboard.")
+        else:
+            messagebox.showerror(title=None, message=f"Password for website: {website}\nemail: {email}\nnot found or password could not be decrypted.")
+
+
+def get_decrypted_password(website, email, data):
+    """Decrypt the password using the encryption key"""
+    for entry in data:
+        if entry["website"] == website and entry["email"] == email:
+            encrypted_password = entry["password"]
+            decrypted_password = decrypt_data(encrypted_password, encryption_key)
+            return decrypted_password   
     return None
 
 
 def delete_website():
     """The user can delete all data associated with a website."""
     website = website_entry.get().lower()
-    data = read_data()
-    delete = messagebox.askokcancel(title=website, message=f"Do you want to delete information for: {website}?")
-    if delete:
-        if website in data:
-            del data[website]
-            with open("data.json", "w") as file:
-                json.dump(data, file, indent=4)
-            messagebox.showinfo(title=None, message=f"Information for: {website} has been deleted.")
-        else:
-            messagebox.showerror(title=None, message=f"Information for: {website} not found.")
+    email = email_username_entry.get().lower()
+
+    if not email:
+        error_label.config(text="Please enter an email address", fg="red")
+    else:
+        data = read_data()
+        delete = messagebox.askokcancel(title=website, message=f"Do you want to delete information for:\nWebsite: {website}\nEmail: {email}?")
+    
+        if delete:
+            for entry in data:
+                if entry ["website"] == website:
+                    if entry["email"] == email:
+                        data.remove(entry)
+                        save_data(data)     
+                        messagebox.showinfo(title=None, message=f"Information for:\nWebsite: {website}\nEmail: {email}\ndeleted.")
+    
+        #messagebox.showerror(title=None, message=f"Information for: {website} not found.")
 
 
 # -----------------------Generate random password-------------------------------
@@ -194,7 +219,7 @@ website_entry.grid(column=1,row=1)
 website_entry.focus()
 email_username_entry = Entry(width=50)
 email_username_entry.grid(column=1, row=3)
-email_username_entry.insert(0, "info@camilleonoda.com")
+email_username_entry.insert(0, "")
 password_entry = Entry(textvariable=generated_password, width=50)
 password_entry.grid(column=1, row=4)
 
@@ -202,7 +227,7 @@ password_entry.grid(column=1, row=4)
 # -----------------------Buttons------------------------------------------------
 generate_password_button = Button(text="Generate a password", font=('Times',12), command=randPassGen)
 generate_password_button.grid(column=1, row=6, sticky=W, padx=(24,0))
-save_button = Button(text="Save", font=('Times',12), command=save)
+save_button = Button(text="Save", font=('Times',12), command=main)
 save_button.grid(column=1, row=8, sticky=W, padx=(24,0))
 clipboard = Button(text="Copy to clipboard", font=('Times',12), command=copy_password)
 clipboard.grid(column=1, row=7, sticky=W, padx=(24,0))
