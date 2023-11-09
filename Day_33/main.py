@@ -7,7 +7,8 @@ def get_quote():
     reponse.raise_for_status()
     data = reponse.json()
     quote = data[0]["q"]
-    canvas.itemconfig(quote_text, text=quote)
+    author = data[0]["a"]
+    canvas.itemconfig(quote_text, text=f"{quote}\n-{author}")
     
 
 window = Tk()
@@ -15,9 +16,9 @@ window.title("Zen quotes...")
 window.config(padx=50, pady=50)
 
 canvas = Canvas(width=600, height=150)
-background_img = PhotoImage(file="background.png")
-canvas.create_image(300, 200, image=background_img)
-quote_text = canvas.create_text(300, 90, text="", width=250, font=("Verdana", 12, "bold"), fill="black")
+#background_img = PhotoImage(file="background.png")
+#canvas.create_image(300, 200, image=background_img)
+quote_text = canvas.create_text(300, 90, text="", width=250, font=("Verdana", 12, "bold"), fill="salmon")
 canvas.grid(row=0, column=0)
 
 img = PhotoImage(file="grandpa.png")
