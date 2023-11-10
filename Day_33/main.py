@@ -24,5 +24,8 @@ img = PhotoImage(file="grandpa3.png")
 grandpa_button = Button(image=img, highlightthickness=0, command=get_quote)
 grandpa_button.grid(row=1, column=0)
 
+click_img = Label(text="Click on the image")
+click_img.grid(column=0, row=2)
+
 
 window.mainloop()
