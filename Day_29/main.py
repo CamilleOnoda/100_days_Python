@@ -1,262 +1,242 @@
 from tkinter import *
 from tkinter import messagebox
-import cryptography
 from cryptography.fernet import Fernet
 import random
 import pyperclip
 import string
 import os
+import json
 
 
-class User:
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
-        self.password_manager = PasswordManager(self.username)
+# -----------------------User interface-----------------------------------------
+window = Tk()
+window.title("CrypticPass")
+window.config(padx=30, pady=30)
+img = PhotoImage(file="logo.png")
+window.iconphoto(False, img)
+canvas = Canvas(width=300,height=200)
+canvas.create_image(150, 100, image=img)
+canvas.grid(column=1, row=0)
 
 
-class PasswordManager:
-    def __init__(self, username):
-        self.window = Tk()
-        self.window.title("Password Manager")
-        self.window.config(padx=30, pady=30)
-        self.canvas = Canvas(width=200, height=200)
-        img = PhotoImage(file="logo.png")
-        self.window.iconphoto(False, img)
-        self.canvas.create_image(130, 100, image=img)
-        self.canvas.image = img
-        self.canvas.grid(column=1, row=0)
-
-        self.username = username
-
-        # Initialize encryption key
-        self.encryption_key = self.load_key()
-
-        # Create and configure UI elements
-        self.create_ui()
+# -----------------------Encryption key handling--------------------------------
+def generate_key():
+    key = Fernet.generate_key()
+    with open("secret.key", "wb") as key_file:
+        key_file.write(key)
 
 
-    def create_ui(self):
-        self.website_label = Label(text="Website:")
-        self.website_label.grid(column=0, row=1)
-        self.email_username_label = Label(text="Email/Username:")
-        self.email_username_label.grid(column=0, row=2)
-        self.password_label = Label(text="Random Password:")
-        self.password_label.grid(column=0, row=3)
-        self.password_len = IntVar()
-        self.password_length_label = Label(text="Password length (6-15)")
-        self.password_length_label.grid(column=2, row=3)
-        self.length = Spinbox(from_=6, to_=15, textvariable=self.password_len)
-        self.length.grid(column=2, row=4)
+def load_key():
+    key_file_path = "secret.key"
+    if not os.path.isfile(key_file_path):
+        generate_key()
+    with open(key_file_path, "rb") as key_file:
+        return key_file.read()
 
-        self.website_entry = Entry(width=50)
-        self.website_entry.grid(column=1, row=1, columnspan=2)
-        self.website_entry.focus()
-        self.email_username_entry = Entry(width=50)
-        self.email_username_entry.grid(column=1, row=2, columnspan=2)
-        self.email_username_entry.insert(0, "info@camilleonoda.com")
-        self.password_entry = Entry(width=28)
-        self.password_entry.grid(column=1, row=3)
-
-        self.generated_password = StringVar()
-        self.generate_password_button = Button(text="Generate Password", command=self.rand_pass_gen)
-        self.generate_password_button.grid(column=2, row=5, padx=(0, 10))
-        self.add_button = Button(text="Add", command=self.save)
-        self.add_button.grid(column=2, row=6, ipadx=5, padx=(0, 79))
-        self.clipboard = Button(text="Copy to clipboard", command=self.copy_password)
-        self.clipboard.grid(column=1, row=4, padx=(0, 62))
-        self.search_button = Button(text="Search Password", command=self.search_password)
-        self.search_button.grid(column=2, row=7, padx=(0, 24))
-
-        self.error_label = Label(text="", fg="red")
-        self.error_label.grid(column=1, row=5)
+encryption_key = load_key()
 
 
-    def load_key(self):
-        key_file_path = "secret.key"
-        if not os.path.isfile(key_file_path):
-            print("Encryption key file not found. Please generate the key first.")
-            self.generate_key()
-        with open(key_file_path, "rb") as key_file:
-            key = key_file.read().strip()
-            print(f"Loaded key: {key}")
+# -----------------------Data processing----------------------------------------
+def main():
+    website = website_entry.get().lower().strip()
+    email = email_username_entry.get()
+    password = password_entry.get()
 
-        if key is None:
-            print("Error: Encryption key is missing or invalid.")       
-        return key
+    if not website or not email or not password:
+        messagebox.showinfo(title=None, message="Please fill in all required information")
+    else:
+        encrypted_password = encrypt_data(password, encryption_key)
+        data = read_data()
+        create_or_update(data, website, email, encrypted_password)
+        clear_entries()
+                
 
-
-    def generate_key(self):
-        key = Fernet.generate_key()
-        with open("secret.key", "wb") as key_file:
-            key_file.write(key)
-        print("Generated key and stored securely")
-
-
-    def encrypt_data(self, data):
-        fernet = Fernet(self.encryption_key)
-        encrypted_data = fernet.encrypt(data.encode())
-        print(self.encryption_key)
-        return encrypted_data
+def clear_entries():
+    website_entry.delete(0, END)
+    email_username_entry.delete(0, END)
+    password_entry.delete(0, END)
 
 
-    def decrypt_data(self, encrypted_data):
-        print(f"Decryption key before decryption: {self.encryption_key}")
-        fernet = Fernet(self.encryption_key)
-        print(self.encryption_key)
-        try:
-            decrypted_data = fernet.decrypt(encrypted_data).decode()
-            return decrypted_data
-        except cryptography.fernet.InvalidToken:
-            return "Invalid or corrupted data"
+def read_data():
+    """Read the json file. If it doesn't exist, it creates a new JSON file."""
+    try:
+        with open("data.json", "r") as file:
+            data = json.load(file)
+        return data
+    except (FileNotFoundError, json.JSONDecodeError):
+        data = []
+        return data
 
 
-    def save(self):
-        website = self.website_entry.get().lower()
-        email = self.email_username_entry.get()
-        password = self.password_entry.get()
-
-        if not website or not email or not password:
-            self.error_label.config(text="Please fill in all required information", fg="red")
-        else:
-            encrypted_password = self.encrypt_data(password)
-            lines = self.read_data()
-
-            if self.website_exists(website, lines):
-                self.update_data(self.username, website, email, encrypted_password, lines)
-            else:
-                validate = messagebox.askokcancel(
-                    title=website, message=f"Website: {website} \n Email: {email} \n Password: {password} \n Do you want to save?"
-                )
-                if validate:
-                    with open("data.txt", "a") as file:
-                        file.write(f"{self.username} | {website} | {email} | {encrypted_password}\n")
-                    self.clear_entries()
-                    messagebox.showinfo(title=None, message="Data saved!")
-                    self.error_label.config(text="")
+def save_data(data):
+    with open("data.json", "w") as file:
+        json.dump(data, file, indent=4, default=lambda x: x.decode() if 
+                  isinstance(x, bytes) else x)
 
 
-    def clear_entries(self):
-        self.website_entry.delete(0, END)
-        self.password_entry.delete(0, END)
+def create_or_update(data, website, email, encrypted_password):
+    website = website_entry.get().lower()
+    email = email_username_entry.get().lower()
 
+    entry_found = False
 
-    def read_data(self):
-        file_path = "data.txt"
-        if not os.path.exists(file_path):
-            with open(file_path, "w"):
-                pass
+    for entry in data:
+        if entry["website"] == website and entry["email"] == email:
+            update_password = messagebox.askyesno(title=website, message=
+                                                  f"The website <{website}>"
+                                        " already exists with this email."
+                                        " Do you want to update the password?")
+            if update_password:
+                entry["password"] = encrypted_password
+                save_data(data)
+                messagebox.showinfo(title=None, message="Password updated!")
+            entry_found = True
+            break
 
-        with open(file_path, "r") as file:
-            lines = file.readlines()
-        return lines
+        elif entry["website"] == website and entry["email"] != email:
+            update_info = messagebox.askyesno(title=website, message=f"The website <{website}>"
+                                        " already exists in the data file."
+                                            " Do you want to add another entry?")
+            if update_info:
+                data.append({"website": website, "email": email, "password": encrypted_password})
+                save_data(data)
+                messagebox.showinfo(title=None, message="Password updated!")
+            entry_found = True
+            break
 
+    if not entry_found:
+        append_entry = messagebox.askyesno(title=website, message=f"Do you want to add a new entry?")
+        if append_entry:
+            data.append({"website": website, "email": email, "password": encrypted_password})
+            save_data(data)
+            clear_entries()
+            messagebox.showinfo(title=None, message="New entry added!")
 
-    def website_exists(self, website, lines):
-        for x, line in enumerate(lines):
-            data = line.strip().split(" | ")
-            if data[1].strip().lower() == website:
-                return x
-        return None
+    return data
 
-
-    def update_data(self, username, website, email, password, lines):
-        update = messagebox.askyesno(
-            title=website,
-            message=f"The website '{website}' already exists in the data file. Do you want to update its information?",
-        )
-        if update:
-            index = self.website_exists(website, lines)
-            if index is not None:
-                lines[index] = f"{self.username} | {website} | {email} | {password}\n"
-                with open("data.txt", "w") as file:
-                    file.writelines(lines)
-                self.clear_entries()
-                messagebox.showinfo(title=None, message="Data updated!")
-
-
-    def rand_pass_gen(self):
-        password = ""
-        password_len = int(self.password_len.get())
-        combination = [string.punctuation, string.ascii_uppercase, string.digits, string.ascii_lowercase]
-        character = ''.join(combination)
-
-        for _ in range(password_len):
-            password += random.choice(character)
-        self.password_entry.insert(0, password)
-
-
-    def get_decrypted_password(self, website, lines):
-        for x, line in enumerate(lines):
-            data = line.strip().split(" | ")
-            if len(data) >= 2 and data[1].strip().lower() == website:
-                encrypted_password = data[3]
-                print(f"Encrypted Password: {encrypted_password}")
-                decrypted_password = self.decrypt_data(encrypted_password)
-                print(f"Decrypted Password: {decrypted_password}")
-                return decrypted_password
-
-        return None
-
-
-    def search_password(self):
-        website = self.website_entry.get()
-        decrypted_password = self.get_decrypted_password(website, self.read_data())
-
+ 
+def search_password():
+    """The user enters the name of a website and retrieves the decrypted password."""
+    website = website_entry.get().lower()
+    email = email_username_entry.get().lower()
+    
+    if not email or not website:
+        messagebox.showinfo(title=None, message="Please fill in all required information.")
+    else:
+        data = read_data()
+        decrypted_password = get_decrypted_password(website, email, data)
+    
         if decrypted_password:
             pyperclip.copy(decrypted_password)
-            messagebox.showinfo(title=None, message=f"Password for {website} copied to clipboard.")
+            messagebox.showinfo(title=None, message="Password copied to clipboard "
+                                f"for website:<{website}>\nEmail:<{email}>")
         else:
-            messagebox.showerror(title=None, message=f"Password for {website} not found or could not be decrypted.")
+            messagebox.showerror(title=None, message="Information not found.")
 
 
-    def copy_password(self):
-        pyperclip.copy(self.password_entry.get())
-        messagebox.showinfo(title=None, message="Password copied to clipboard.")
+def get_decrypted_password(website, email, data):
+    """Decrypt the password using the encryption key"""
+    for entry in data:
+        if entry["website"] == website and entry["email"] == email:
+            encrypted_password = entry["password"]
+            decrypted_password = decrypt_data(encrypted_password, encryption_key)
+            return decrypted_password   
+    return None
 
 
-    def run(self):
-        self.window.mainloop()
+def delete_website():
+    """The user can delete all data associated with a website and an email."""
+    website = website_entry.get().lower()
+    email = email_username_entry.get().lower()
+
+    if not email:
+        messagebox.showinfo(title=None, message="Please enter an email address")
+    else:
+        data = read_data()
+        entry_found = False
+        for entry in data:
+            if entry["website"] == website and entry["email"] == email:
+                entry_found = True
+                delete = messagebox.askokcancel(title=website, message=f"Do you want to delete "
+                                        f"information for:\nWebsite:<{website}>\nEmail:<{email}>?")
+                if delete:
+                    if entry["email"] == email and entry["website"] == website:
+                        data.remove(entry)
+                        save_data(data)     
+                        messagebox.showinfo(title=None, message=f"Information deleted for:"
+                                            f"\nWebsite:<{website}>\nEmail:<{email}>\nd")
+        if not entry_found:
+            messagebox.showerror(title=None, message=f"Information not found.")
 
 
-class PasswordPrompt:
-    def __init__(self):
-        self.password_prompt = Tk()
-        self.password_prompt.title("Enter your credentials")
-        self.password_prompt.config(padx=30, pady=30)
-        self.password_prompt.geometry("300x150")
+# -----------------------Generate random password-------------------------------
+# -----------------------Get the length of the password-------------------------
+password_len = IntVar()
+length = Spinbox(from_= 6, to_= 12, textvariable=password_len, width=22)
+length.grid(column=0, row=5, ipady=2, columnspan=2)
 
-        self.username_label = Label(self.password_prompt, text="Username:")
-        self.username_label.grid(column=0, row=1)
-        self.username_entry = Entry(self.password_prompt)
-        self.username_entry.grid(column=1, row=1)
-        self.username_entry.focus()
-
-        self.password_prompt_label = Label(self.password_prompt, text="Password:")
-        self.password_prompt_label.grid(column=0, row=2)
-        self.password_prompt_entry = Entry(self.password_prompt, show="*")
-        self.password_prompt_entry.grid(column=1, row=2)
-
-        self.password_submit_password = Button(self.password_prompt, text="Submit", command=self.check_credentials)
-        self.password_submit_password.grid(column=1, row=3)
+generated_password = StringVar()
+combination = [string.punctuation, string.ascii_uppercase, string.digits, string.ascii_lowercase]
+def randPassGen():
+    password = ""
+    for char in range(password_len.get()):
+        char = random.choice(combination)
+        password = password + random.choice(char)
+    generated_password.set(password)
 
 
-    def check_credentials(self):
-        entered_username = self.username_entry.get()
-        entered_password = self.password_prompt_entry.get()
-        if entered_username == "camille" and entered_password == "1234":
-            self.password_prompt.destroy()
-            user = User(entered_username, entered_password)
-            user.password_manager.run()
-        else:
-            self.credentials_error = Label(text="Incorrect username or password", fg="red")
-            self.credentials_error.grid(column=1, row=4)
+# -----------------------Copy to clipboard--------------------------------------
+def copy_password():
+    pyperclip.copy(generated_password.get())
+    messagebox.showinfo(title=None, message="Password copied to clipboard.")
 
 
-    def run(self):
-        self.password_prompt.mainloop()
+# -----------------------Data encryption and decryption-------------------------
+def encrypt_data(data, key):
+    fernet = Fernet(key)
+    encrypted_data = fernet.encrypt(data.encode())
+    return encrypted_data
 
 
-if __name__ == "__main__":
-    password_prompt = PasswordPrompt()
-    password_prompt.run()
+def decrypt_data(encrypted_data, key):
+    fernet = Fernet(key)
+    decrypted_data = fernet.decrypt(encrypted_data).decode()
+    return decrypted_data
+
+
+# -----------------------Labels-------------------------------------------------
+website_label = Label(text="Website", font=('Times',12))
+website_label.grid(column=0, row=1,sticky=W)
+email_username_label = Label(text="Email/Username", font=('Times',12))
+email_username_label.grid(column=0, row=3,sticky=W)
+password_label = Label(text="Random Password", font=('Times',12))
+password_label.grid(column=0, row=4,sticky=W)
+password_length_label = Label(text="Password length (6 - 12)", font=('Times',12))
+password_length_label.grid(column=0, row=5,sticky=W)
+
+
+# -----------------------Entries------------------------------------------------
+website_entry = Entry(width=50)
+website_entry.grid(column=1,row=1)
+website_entry.focus()
+email_username_entry = Entry(width=50)
+email_username_entry.grid(column=1, row=3)
+email_username_entry.insert(0, "")
+password_entry = Entry(textvariable=generated_password, width=50)
+password_entry.grid(column=1, row=4)
+
+
+# -----------------------Buttons------------------------------------------------
+generate_password_button = Button(text="Generate a password", font=('Times',12), command=randPassGen)
+generate_password_button.grid(column=1, row=6, sticky=W, padx=(24,0))
+save_button = Button(text="Save", font=('Times',12), command=main)
+save_button.grid(column=1, row=8, sticky=W, padx=(24,0))
+clipboard = Button(text="Copy to clipboard", font=('Times',12), command=copy_password)
+clipboard.grid(column=1, row=7, sticky=W, padx=(24,0))
+search_button = Button(text="Search Password", width=12, font=('Times',12), command=search_password)
+search_button.grid(column=2, row=2)
+delete_button = Button(text="Delete Website", width=12, font=('Times',12), command=delete_website)
+delete_button.grid(column=2, row=1)
+
+
+window.mainloop()
