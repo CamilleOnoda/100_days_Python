@@ -1,6 +1,5 @@
 from tkinter import *
 from tkinter import messagebox
-from turtle import clear
 from cryptography.fernet import Fernet
 import random
 import pyperclip
@@ -20,7 +19,7 @@ canvas.create_image(150, 100, image=img)
 canvas.grid(column=1, row=0)
 
 
-# -----------------------Encryption key handling-----------------------------------------
+# -----------------------Encryption key handling--------------------------------
 def generate_key():
     key = Fernet.generate_key()
     with open("secret.key", "wb") as key_file:
@@ -34,13 +33,11 @@ def load_key():
     with open(key_file_path, "rb") as key_file:
         return key_file.read()
 
-
 encryption_key = load_key()
 
 
-# -----------------------Data processing-----------------------------------------
+# -----------------------Data processing----------------------------------------
 def main():
-    """Save data into a txt file."""
     website = website_entry.get().lower().strip()
     email = email_username_entry.get()
     password = password_entry.get()
@@ -62,7 +59,7 @@ def clear_entries():
 
 
 def read_data():
-    """Read the json file. If it doesn't exist, it creates a new JSON dict."""
+    """Read the json file. If it doesn't exist, it creates a new JSON file."""
     try:
         with open("data.json", "r") as file:
             data = json.load(file)
@@ -74,7 +71,8 @@ def read_data():
 
 def save_data(data):
     with open("data.json", "w") as file:
-        json.dump(data, file, indent=4, default=lambda x: x.decode() if isinstance(x, bytes) else x)
+        json.dump(data, file, indent=4, default=lambda x: x.decode() if 
+                  isinstance(x, bytes) else x)
 
 
 def create_or_update(data, website, email, encrypted_password):
@@ -85,9 +83,10 @@ def create_or_update(data, website, email, encrypted_password):
 
     for entry in data:
         if entry["website"] == website and entry["email"] == email:
-            update_password = messagebox.askyesno(title=website, message=f"The website '{website}'"
-                                        " already exists in the data file for the provided email."
-                                            " Do you want to update the password?")
+            update_password = messagebox.askyesno(title=website, message=
+                                                  f"The website <{website}>"
+                                        " already exists with this email."
+                                        " Do you want to update the password?")
             if update_password:
                 entry["password"] = encrypted_password
                 save_data(data)
@@ -96,7 +95,7 @@ def create_or_update(data, website, email, encrypted_password):
             break
 
         elif entry["website"] == website and entry["email"] != email:
-            update_info = messagebox.askyesno(title=website, message=f"The website '{website}'"
+            update_info = messagebox.askyesno(title=website, message=f"The website <{website}>"
                                         " already exists in the data file."
                                             " Do you want to add another entry?")
             if update_info:
@@ -130,9 +129,12 @@ def search_password():
     
         if decrypted_password:
             pyperclip.copy(decrypted_password)
-            messagebox.showinfo(title=None, message=f"Password for website: {website}\nemail: {email}\ncopied to clipboard.")
+            messagebox.showinfo(title=None, message="Password copied to clipboard "
+                                f"for website:<{website}>\nEmail:<{email}>")
         else:
-            messagebox.showerror(title=None, message=f"Password for website: {website}\nemail: {email}\nnot found or password could not be decrypted.")
+            messagebox.showerror(title=None, message="Password for Website: "
+                                 f"<{website}>\nEmail:<{email}> not found or "
+                                 "password could not be decrypted.")
 
 
 def get_decrypted_password(website, email, data):
@@ -146,7 +148,7 @@ def get_decrypted_password(website, email, data):
 
 
 def delete_website():
-    """The user can delete all data associated with a website."""
+    """The user can delete all data associated with a website and an email."""
     website = website_entry.get().lower()
     email = email_username_entry.get().lower()
 
@@ -154,17 +156,21 @@ def delete_website():
         error_label.config(text="Please enter an email address", fg="red")
     else:
         data = read_data()
-        delete = messagebox.askokcancel(title=website, message=f"Do you want to delete information for:\nWebsite: {website}\nEmail: {email}?")
-    
-        if delete:
-            for entry in data:
-                if entry ["website"] == website:
-                    if entry["email"] == email:
+        entry_found = False
+        for entry in data:
+            if entry["website"] == website and entry["email"] == email:
+                entry_found = True
+                delete = messagebox.askokcancel(title=website, message=f"Do you want to delete "
+                                        f"information for:\nWebsite:<{website}>\nEmail:<{email}>?")
+                if delete:
+                    if entry["email"] == email and entry["website"] == website:
                         data.remove(entry)
                         save_data(data)     
-                        messagebox.showinfo(title=None, message=f"Information for:\nWebsite: {website}\nEmail: {email}\ndeleted.")
-    
-        #messagebox.showerror(title=None, message=f"Information for: {website} not found.")
+                        messagebox.showinfo(title=None, message=f"Information deleted for:"
+                                            f"\nWebsite:<{website}>\nEmail:<{email}>\nd")
+        if not entry_found:
+            messagebox.showinfo(title=None, message=f"Information not found for:"
+                                    f"\nWebsite:<{website}>\nEmail:<{email}>")
 
 
 # -----------------------Generate random password-------------------------------
