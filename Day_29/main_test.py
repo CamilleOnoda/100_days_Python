@@ -43,13 +43,12 @@ def main():
     password = password_entry.get()
 
     if not website or not email or not password:
-        error_label.config(text="Please fill in all required information", fg="red")
+        messagebox.showinfo(title=None, message="Please fill in all required information")
     else:
         encrypted_password = encrypt_data(password, encryption_key)
         data = read_data()
         create_or_update(data, website, email, encrypted_password)
         clear_entries()
-        error_label.config(text="")
                 
 
 def clear_entries():
@@ -121,8 +120,8 @@ def search_password():
     website = website_entry.get().lower()
     email = email_username_entry.get().lower()
     
-    if not email:
-        error_label.config(text="Please enter an email address", fg="red")
+    if not email or not website:
+        messagebox.showinfo(title=None, message="Please fill in all required information.")
     else:
         data = read_data()
         decrypted_password = get_decrypted_password(website, email, data)
@@ -132,9 +131,7 @@ def search_password():
             messagebox.showinfo(title=None, message="Password copied to clipboard "
                                 f"for website:<{website}>\nEmail:<{email}>")
         else:
-            messagebox.showerror(title=None, message="Password for Website: "
-                                 f"<{website}>\nEmail:<{email}> not found or "
-                                 "password could not be decrypted.")
+            messagebox.showerror(title=None, message="Information not found.")
 
 
 def get_decrypted_password(website, email, data):
@@ -153,7 +150,7 @@ def delete_website():
     email = email_username_entry.get().lower()
 
     if not email:
-        error_label.config(text="Please enter an email address", fg="red")
+        messagebox.showinfo(title=None, message="Please enter an email address")
     else:
         data = read_data()
         entry_found = False
@@ -169,8 +166,7 @@ def delete_website():
                         messagebox.showinfo(title=None, message=f"Information deleted for:"
                                             f"\nWebsite:<{website}>\nEmail:<{email}>\nd")
         if not entry_found:
-            messagebox.showinfo(title=None, message=f"Information not found for:"
-                                    f"\nWebsite:<{website}>\nEmail:<{email}>")
+            messagebox.showerror(title=None, message=f"Information not found.")
 
 
 # -----------------------Generate random password-------------------------------
@@ -241,11 +237,6 @@ search_button = Button(text="Search Password", width=12, font=('Times',12), comm
 search_button.grid(column=2, row=2)
 delete_button = Button(text="Delete Website", width=12, font=('Times',12), command=delete_website)
 delete_button.grid(column=2, row=1)
-
-
-# -----------------------Error label--------------------------------------------
-error_label = Label(text="", fg="red")
-error_label.grid(column=1, row=5)
 
 
 window.mainloop()
