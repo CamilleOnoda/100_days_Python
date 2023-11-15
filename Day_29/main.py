@@ -10,7 +10,7 @@ import json
 
 # -----------------------User interface-----------------------------------------
 window = Tk()
-window.title("CrypticPass")
+window.title("Cryptic Pass")
 window.config(padx=30, pady=30)
 img = PhotoImage(file="logo.png")
 window.iconphoto(False, img)
