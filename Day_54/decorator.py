@@ -2,7 +2,7 @@ import time
 
 
 current_time = time.time()
-print(current_time) # seconds since Jan 1st, 1970
+print(current_time)
 
 
 def speed_calc_decorator(function):
