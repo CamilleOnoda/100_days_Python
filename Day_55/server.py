@@ -3,6 +3,9 @@ import random
 
 app = Flask(__name__)
 
+correct_number = random.randint(0, 9)
+print(correct_number)
+
 @app.route('/')
 def game():
     return "<div style='text-align: center'>"\
@@ -12,25 +15,15 @@ def game():
 
 @app.route('/<int:number>')
 def guess_nb(number):
-    correct_number = random.randint(0, 9)
-    number_found = False
-    while not number_found:
-        if number == correct_number:
-            number_found = True
-            return "<div style='text-align: center'>"\
-            "<h1 style=text-align: center; color: orange'>You found me!</h1>"\
-            "<img style='display: block; margin: auto' src='https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbXlkZGozZWJ5dWJ1NWRydWE2YW8xamVwZmxkOTc0NzE5OGRuNzN4dyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/cXblnKXr2BQOaYnTni/giphy.gif'>"
-        elif number < correct_number:
-            return "<div style='text-align: center'>"\
-            "<h1 style=text-align: center; color: green'>Too low! Try again!</h1>"\
-            "<img style='display: block; margin: auto' src='https://media.giphy.com/media/ljtfkyTD3PIUZaKWRi/giphy.gif'>"
-        elif number > correct_number:
-            return "<div style='text-align: center'>"\
-            "<h1 style=text-align: center; color: blue'>Too high! Try again!</h1>"\
-            "<img style='display: block; margin: auto' src='https://media.giphy.com/media/BY8ORoRpnJDXeBNwxg/giphy.gif'>"
-
-
-
+    if number == correct_number:
+        return "<h1 style='text-align: center; color: orange'>You found me!</h1>"\
+        "<img style='display: block; margin: auto' src='https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbXlkZGozZWJ5dWJ1NWRydWE2YW8xamVwZmxkOTc0NzE5OGRuNzN4dyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/cXblnKXr2BQOaYnTni/giphy.gif'>"
+    elif number < correct_number:
+        return "<h1 style='text-align: center; color: green'>Too low! Try again!</h1>"\
+        "<img style='display: block; margin: auto' src='https://media.giphy.com/media/ljtfkyTD3PIUZaKWRi/giphy.gif'>"
+    elif number > correct_number:
+        return "<h1 style='text-align: center; color: blue'>Too high! Try again!</h1>"\
+        "<img style='display: block; margin: auto' src='https://media.giphy.com/media/BY8ORoRpnJDXeBNwxg/giphy.gif'>"
 
 
 if __name__ == "__main__":
