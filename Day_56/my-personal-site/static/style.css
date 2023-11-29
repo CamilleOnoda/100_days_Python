@@ -5,8 +5,8 @@
 body {
     display: flex;
     flex-direction: column;
-    font-family: 'Playpen Sans', Verdana, sans-serif, cursive;
-    font-weight: 800;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 20px;
     margin: 0;
 }
 
@@ -30,6 +30,12 @@ header {
 
 h1 {
     padding-left: 10px;
+}
+
+h2 {
+    font-family: 'Sacramento', cursive;
+    font-size: 4rem;
+    margin-bottom: 0;
 }
 
 h3 {
@@ -91,7 +97,7 @@ a:link {
     border-radius: 30px;
     text-align: center;
     margin: 10px;
-    padding: 20px 30px;
+    padding: 15px 25px;
     list-style-type: none;
 }
 
