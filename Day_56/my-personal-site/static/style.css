@@ -89,8 +89,9 @@ a:link {
     width: 400px;
     padding: 20px;
     margin: 20px;
-    border-radius: 30px;
-    border: 10px inset black;
+    border-radius: 95px;
+    border: 8px inset #427D9D;
+    background-color: azure;
 }
 
 #skills li {
