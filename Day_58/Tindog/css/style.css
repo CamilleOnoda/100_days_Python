@@ -26,3 +26,34 @@
   height: 100px;
   border-radius: 50%;
 }
+
+/*Title section*/
+#iphone-img {
+  padding-bottom: 0;
+  padding-top: 5px;
+}
+
+#download-left {
+  color: black;
+  background-color: white;
+  border: none;
+  margin-right: 8px;
+}
+
+#download-left:hover {
+  background-color: lightgrey;
+}
+
+#download-right {
+  color: white;
+  border-color: white;
+}
+
+#download-right:hover {
+  background-color: white;
+  color: black;
+}
+
+#download-right, #download-left {
+  padding: 10px;
+}
