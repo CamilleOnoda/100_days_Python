@@ -1,3 +1,8 @@
 img {
     padding-right: 10px;
 }
+
+.d-block {
+    width: 630px;
+    padding-top: 20px;
+}
