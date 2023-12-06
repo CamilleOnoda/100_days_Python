@@ -1,7 +1,5 @@
-from ftplib import all_errors
 from flask import Flask, render_template
 import requests
-from post import Post
 
 
 app = Flask(__name__)
