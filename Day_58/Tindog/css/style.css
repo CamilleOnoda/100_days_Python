@@ -29,8 +29,8 @@
 
 /*Title section*/
 #iphone-img {
-  padding-bottom: 0;
-  padding-top: 5px;
+  width: 337px;
+  height: 594px;
 }
 
 #download-left {
@@ -56,4 +56,9 @@
 
 #download-right, #download-left {
   padding: 10px;
+}
+
+/*Features section*/
+#features {
+  margin-top: 5px;
 }
