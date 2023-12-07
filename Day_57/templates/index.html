@@ -1,17 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>My Website</title>
-</head>
-<body>
-    <h1>Hello World!</h1>
-    <h2>{{ 10*10 }}</h2>
-    <h3>Random number: {{ num }}</h3>
-    <h3>Today is: {{ d }}</h3>
-</body>
-<footer>
-    <p>Copyright: {{ y }}</p>
-    <p>Built by: Camille Onoda</p>
-</footer>
-</html>
+{% extends "layout.html" %}
+
+{% block body %}
+
+    <form action="/guess" method="post">
+        <input autocomplete="off" autofocus name="name" placeholder="Name" type="text">
+        <button type="submit">Guess</button>
+    </form>
+
+{% endblock %}
