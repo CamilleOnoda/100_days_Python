@@ -1,9 +1,11 @@
 {% extends "layout.html" %}
 
 {% block body %}
-
-    <p>Hey {{ name.title() }}</p>
-    <p>I think you are {{ gender }}</p>
+<div style="text-align: center;">
+    <p>Hey {{ name.title() }}!</p>
+    <p>I think you are {{ gender }}.</p>
     <p>And maybe {{ age }} years old.</p>
+    <img src="../static/cat.gif" alt="">
+</div>
 
 {% endblock %}
