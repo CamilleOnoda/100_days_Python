@@ -99,3 +99,9 @@
 #mastiff-card {
   border: 1px solid black;
 }
+
+/*Footer*/
+.container-footer {
+  margin-left: 50px;
+  margin-right: 50px;
+}
