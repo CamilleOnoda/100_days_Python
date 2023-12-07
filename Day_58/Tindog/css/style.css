@@ -69,3 +69,33 @@
   height: 100PX;
   margin-top: 48px;
 }
+
+/*Pricing*/
+#btn-sign-up {
+  border: 1px solid black;
+  color: black;
+}
+
+#btn-sign-up:hover {
+  background-color: black;
+  color: white;
+}
+
+#btn-started-contact {
+  border: none;
+  background-color: black;
+  color: white;
+}
+
+#btn-started-contact:hover {
+  background-color: grey;
+}
+
+#mastiff {
+  background-color: black;
+  color: white;
+}
+
+#mastiff-card {
+  border: 1px solid black;
+}
