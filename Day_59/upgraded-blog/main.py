@@ -9,13 +9,7 @@ all_posts = response.json()
 
 @app.route('/')
 def index():
-    for blog_post in all_posts:
-        id = blog_post['id']
-        title = blog_post['title']
-        subtitle = blog_post['subtitle']
-        date = blog_post['date']
-    return render_template("index.html", title=title, subtitle=subtitle, date=date,
-                           id=id)
+    return render_template("index.html", posts=all_posts)
 
 
 @app.route('/about')
