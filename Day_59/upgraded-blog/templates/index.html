@@ -16,20 +16,22 @@
         <div class="container px-4 px-lg-5">
             <div class="row gx-4 gx-lg-5 justify-content-center">
                 <div class="col-md-10 col-lg-8 col-xl-7">
+                    {% for post in posts: %}
                     <!-- Post preview-->
                     <div class="post-preview">
-                        <a href="{{ url_for('get_post', index=id) }}">
-                            <h2>{{title}}</h2>
-                            <h3>{{subtitle}}</h3>
+                        <a href="{{ url_for('get_post', index=post['id']) }}">
+                            <h2>{{ post['title']}}</h2>
+                            <h3>{{post['subtitle']}}</h3>
                         </a>
                         <p class="post-meta">
                             Posted by
                             <a href="#!">Camille</a>
-                            {{date}}
+                            {{post['date']}}
                         </p>
                     </div>
                     <!-- Divider-->
                     <hr class="my-4" />
+                    {% endfor %}
                     <!-- Pager-->
                     <div class="d-flex justify-content-end mb-4"><a 
                         class="btn btn-primary text-uppercase" href="#!">
