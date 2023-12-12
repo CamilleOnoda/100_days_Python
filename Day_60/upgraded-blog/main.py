@@ -22,9 +22,8 @@ def contact():
     if request.method == "POST":
         name = request.form["name"]
         message = request.form["message"]
-        return f"<h1>Thank you {name}! Your message has been sent!</h1><p>Message: {message}</p>"
-    else:
-        return render_template('contact.html')
+        return render_template('contact.html', name=name, message=message, message_sent=True)
+    return render_template('contact.html', message_sent=False)
 
 
 @app.route('/post/<int:index>')
