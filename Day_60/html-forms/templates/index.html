@@ -1,16 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Title</title>
-    </head>
-    <body>
-        <form>
+{% extends "layout.html" %}
+
+{% block body %}
+        <form action="/" method="post">
             <label for="name">Name</label>
-            <input autocomplete="off" autofocus placeholder="name" type="text">
+            <input autocomplete="off" autofocus name="name" placeholder="name" type="text">
             <label for="name">Password</label>
             <input autocomplete="off" autofocus placeholder="password" type="text">
             <button type="submit">Send</button>
         </form>
-    </body>
-</html>
+{% endblock %}
