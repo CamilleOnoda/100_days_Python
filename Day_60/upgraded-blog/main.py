@@ -17,18 +17,14 @@ def about():
     return render_template("about.html")
 
 
-@app.route('/contact')
+@app.route('/contact', methods=["GET", "POST"])
 def contact():
-    return render_template('contact.html')
-
-
-@app.route('/form-entry', methods=["POST"])
-def receive_data():
-    success = None
     if request.method == "POST":
         name = request.form["name"]
         message = request.form["message"]
         return f"<h1>Thank you {name}! Your message has been sent!</h1><p>Message: {message}</p>"
+    else:
+        return render_template('contact.html')
 
 
 @app.route('/post/<int:index>')
