@@ -1,9 +1,8 @@
-from flask import Flask, redirect, render_template, request
+from flask import Flask, render_template
 from flask_wtf import FlaskForm
 import os
 from wtforms import EmailField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, Length
-from itsdangerous.serializer import Serializer
 
 
 app = Flask(__name__)
