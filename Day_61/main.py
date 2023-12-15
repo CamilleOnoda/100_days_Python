@@ -1,11 +1,14 @@
+from ensurepip import bootstrap
 from flask import Flask, render_template
 from flask_wtf import FlaskForm
+from flask_bootstrap import Bootstrap4
 import os
 from wtforms import EmailField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, Length
 
 
 app = Flask(__name__)
+bootstrap = Bootstrap4(app)
 
 SECRET_KEY = os.environ.get("SECRET_KEY") or os.urandom(24)
 app.config['SECRET_KEY'] = SECRET_KEY
