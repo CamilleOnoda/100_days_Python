@@ -2,7 +2,7 @@ from flask import Flask, redirect, render_template, request
 from flask_wtf import FlaskForm
 import os
 from wtforms import EmailField, PasswordField, SubmitField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Email, Length
 from itsdangerous.serializer import Serializer
 
 
@@ -13,8 +13,8 @@ app.config['SECRET_KEY'] = SECRET_KEY
 
 
 class LoginForm(FlaskForm):
-    email = EmailField(label='Email', validators=[DataRequired()])
-    password = PasswordField(label='Password', validators=[DataRequired()])
+    email = EmailField(label='Email', validators=[Email()])
+    password = PasswordField(label='Password', validators=[Length(min=8)])
     submit = SubmitField(label='Log In', validators=[DataRequired()])
 
 
