@@ -2,11 +2,19 @@
 
 {% block body %}
 		<h1>Login</h1>
-		<form method="POST" action="/">
+		<form method="POST" action="{{ url_for('login') }}" novalidate>
 			{{ form.csrf_token }}
-			{{ form.email.label }} {{ form.email(size=30) }}
-			{{ form.password.label }} {{ form.password(size=30) }}
-			<input type="submit" value="Log in">
-		</form>
 
+				{{ form.email.label }} {{ form.email(size=30) }}
+				{% for err in form.email.errors %}
+				<span style="color: crimson;">{{ err }}</span>
+				{% endfor %}
+
+				{{ form.password.label }} {{ form.password(size=30) }}
+				{% for err in form.password.errors %}
+				<span style="color: crimson;">{{ err }}</span>
+				{% endfor %}
+
+			{{ form.submit }}
+		</form>
 {% endblock %}
