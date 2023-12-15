@@ -1,7 +1,7 @@
 from flask import Flask, redirect, render_template, request
 from flask_wtf import FlaskForm
 import os
-from wtforms import PasswordField, StringField
+from wtforms import EmailField, PasswordField, StringField
 from wtforms.validators import DataRequired
 from itsdangerous.serializer import Serializer
 
@@ -13,8 +13,8 @@ app.config['SECRET_KEY'] = SECRET_KEY
 
 
 class MyForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    email = EmailField(label='Email', validators=[DataRequired()])
+    password = PasswordField(label='Password', validators=[DataRequired()])
 
 
 @app.route("/")
