@@ -1,19 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
+        {% block head %}
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>{% block title %}{% endblock %}</title>
-        <style>
-        {% block styling %}
-        h1 {
-            color: purple;
-        }
-        body {
-            background-color: lightpink; text-align: center;
-        }
+        {% block styles %}
+            <!-- Boostrap CSS-->
+            {{ bootstrap.load_css() }}
         {% endblock %}
-        </style>
+		<title>{% block title %}{% endblock %}</title>
+        {% endblock %}
 	</head>
 	<body>
         <div class="container">
