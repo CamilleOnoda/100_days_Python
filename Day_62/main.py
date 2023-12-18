@@ -23,6 +23,9 @@ class CafeForm(FlaskForm):
     coffee = SelectField('Coffee rating', choices=['☕','☕☕','☕☕☕',
                                                    '☕☕☕☕','☕☕☕☕☕'], 
                                                    validators=[DataRequired()])
+    sweet = SelectField('Food rating', choices=['🍩','🍩🍩','🍩🍩🍩',
+                                                   '🍩🍩🍩🍩','🍩🍩🍩🍩🍩'], 
+                                                   validators=[DataRequired()])
     wifi = SelectField('Wifi strength rating', choices=['✘','💪','💪💪','💪💪💪',
                                                    '💪💪💪💪','💪💪💪💪💪'], 
                                                    validators=[DataRequired()])
@@ -48,6 +51,7 @@ def add_cafe():
                            f"{form.open_hours.data},"
                            f"{form.closed.data},"
                            f"{form.coffee.data},"
+                           f"{form.sweet.data},"
                            f"{form.wifi.data},"
                            f"{form.power.data}")
             return redirect(url_for('cafes'))
