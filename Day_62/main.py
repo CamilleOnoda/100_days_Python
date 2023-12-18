@@ -19,14 +19,14 @@ class CafeForm(FlaskForm):
     city = StringField('City/Prefecture', validators=[DataRequired()])
     location = StringField('Location on Google Map (URL)', validators=[URL()])
     open_hours = StringField('Opening hours (e.g.: 8AM - 5PM)', validators=[DataRequired()])
-    closed = StringField('Closing days', validators=[DataRequired()])
+    closed = StringField('Closing days (Enter "None" if it has no closing days)', validators=[DataRequired()])
     coffee = SelectField('Coffee rating', choices=['☕','☕☕','☕☕☕',
                                                    '☕☕☕☕','☕☕☕☕☕'], 
                                                    validators=[DataRequired()])
-    wifi = SelectField('Wifi strength rating', choices=['❌','💪','💪💪','💪💪💪',
+    wifi = SelectField('Wifi strength rating', choices=['✘','💪','💪💪','💪💪💪',
                                                    '💪💪💪💪','💪💪💪💪💪'], 
                                                    validators=[DataRequired()])
-    power = SelectField('Power socket availability', choices=['❌','🔌','🔌🔌','🔌🔌🔌',
+    power = SelectField('Power socket availability', choices=['✘','🔌','🔌🔌','🔌🔌🔌',
                                                    '🔌🔌🔌🔌','🔌🔌🔌🔌🔌'], 
                                                    validators=[DataRequired()])
     submit = SubmitField('Submit', )
@@ -43,6 +43,7 @@ def add_cafe():
     if form.validate_on_submit():
         with open('cafe-data.csv', mode='a', encoding='utf-8') as csv_file:
             csv_file.write(f"\n{form.cafe.data},"
+                           f"{form.city.data},"
                            f"{form.location.data},"
                            f"{form.open_hours.data},"
                            f"{form.closed.data},"
