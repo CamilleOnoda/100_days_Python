@@ -11,9 +11,14 @@ def home():
     return render_template('index.html')
 
 
-@app.route("/add")
+@app.route("/add", methods=['GET','POST'])
 def add():
-    return render_template('add.html')
+    if request.method == 'POST':
+        return render_template('index.html', title=request.form.get("title"), 
+                               author=request.form.get("author"), 
+                               rating=request.form.get("rating"))
+    elif request.method == 'GET':
+        return render_template('add.html')
 
 
 if __name__ == "__main__":
