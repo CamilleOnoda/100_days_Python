@@ -5,6 +5,9 @@
     <meta name="viewport" 
     content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     {% block styles %}
+    <!--Bootstrap CSS-->
+    {{ bootstrap.load_css() }}
+    <!--styles.css-->
     <link href="/static/styles.css" rel="stylesheet">
     {% endblock %}
     <title>{% block title %}{% endblock %}</title>
