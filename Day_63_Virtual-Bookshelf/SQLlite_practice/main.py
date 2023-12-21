@@ -44,13 +44,19 @@ with app.app_context():
     print(book)
 
 # Update a particular record by query
+#with app.app_context():
+#    book_to_update = db.session.execute(db.select(Book).where(Book.title == "Harry Potter and the Chamber of Secrets")).scalar()
+#    book_to_update.title = "Harry Potter"
+#    book_to_update.rating = 3
+#    db.session.commit()
+
+
+# Update a record by primary key
+book_id = 1
 with app.app_context():
-    book_to_update = db.session.execute(db.select(Book).where(Book.title == "Harry Potter")).scalar()
-    book_to_update.title = "Harry Potter and the Chamber of Secrets"
+    book_to_update = db.session.execute(db.select(Book).where(Book.id == book_id)).scalar()
+    book_to_update.title = "Harry Potter and the Goblet of Fire"
     db.session.commit()
-
-
-
 
 
 
