@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Library</title>
-  </head>
-  <body>
+{% extends 'layout.html' %}
+{% block title %}Virtual Bookshelf{% endblock %}
+
+{% block content %}
     <h1>My virtual bookshelf</h1>
     {% for book in books_list %}
       <ul>
@@ -12,5 +9,4 @@
       </ul>
     {% endfor %}
     <a href="{{ url_for('add') }}">Add New Book</a>
-  </body>
-</html>
+{% endblock %}
