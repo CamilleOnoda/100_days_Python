@@ -1,15 +1,22 @@
 {% extends 'layout.html' %}
-{% from 'bootstrap5/form.html' import render_form %}
 {% block title %}Add A New Cafe{% endblock %}
 
-{% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-sm-12 col-md-8">
-      <h1>Add a new book</h1>
-      {{ render_form(form, novalidate=True) }}
-    </div>
-  </div>
-  <p><a class="btn btn-warning btn-m" href="{{ url_for('home') }}">Return to home page</a></p>
-</div>
+{% block content %}   
+      <form action="{{ url_for('add') }}" method="POST">
+        <ul>
+          <li><label for="name">Book Name</label>
+          <input autocomplete="off" autofocus name="title" placeholder="title" type="text" />
+          </li>
+          <li>
+          <label for="name">Book Author</label>
+          <input autocomplete="off" autofocus name="author" placeholder="author" type="text" />
+          </li>
+          <li>
+          <label for="name">Rating</label>
+          <input autocomplete="off" autofocus name="rating" placeholder="rating" type="text" />
+          </li>
+        </ul>
+        <button type="submit">Add Book</button>
+      </form>
+      <p><a href="{{ url_for('home') }}">Return to home page</a></p>
 {% endblock %}
