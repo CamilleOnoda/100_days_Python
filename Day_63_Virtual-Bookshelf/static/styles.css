@@ -7,8 +7,8 @@ a {
     color: #ffc107;
 }
 
-#delete {
-    margin-left: 20px;
+#delete,#edit {
+    padding: 0;
 }
     
 ul,li {
