@@ -1,10 +1,6 @@
-from ast import Str
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap5
-from flask_wtf import FlaskForm
-from wtforms import StringField
-from wtforms.validators import DataRequired
 import os
 
 
@@ -19,21 +15,17 @@ app.config['SECRET_KEY'] = SECRET_KEY
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///virtual-bookshelf.db"
 db = SQLAlchemy()
 db.init_app(app)
+
 # Create table model
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250), unique=True, nullable=False)
     author = db.Column(db.String(250), nullable=False)
     rating = db.Column(db.Float, nullable=False)
+
 # Create table
 with app.app_context():
     db.create_all()
-
-# Flask form
-class Bookform(FlaskForm):
-    title = StringField('Title', validators=[DataRequired()])
-    author = StringField('Author', validators=[DataRequired()])
-    rating = StringField('Rating', validators=[DataRequired()])
 
 # Flask routes
 @app.route('/')
@@ -44,14 +36,13 @@ def home():
 
 @app.route("/add", methods=['GET','POST'])
 def add():
-    form = Bookform()
-    if form.validate_on_submit():
-        new_book = Book(title=form.title.data,author=form.author.data,
-                            rating=form.rating.data)
+    if request.method == 'POST':
+        new_book = Book(title=request.form["title"],author=request.form["author"],
+                            rating=request.form["rating"])
         db.session.add(new_book)
         db.session.commit()
         return redirect(url_for('home'))
-    return render_template('add.html', form=form)
+    return render_template('add.html')
 
 
 @app.route("/edit", methods=['GET','POST'])
@@ -77,4 +68,3 @@ def delete():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
