@@ -1,19 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Add Book</title>
-  </head>
-  <body>
-    <form action="{{ url_for('add') }}" method="POST">
-      <label for="name">Book Name</label>
-      <input autocomplete="off" autofocus name="title" placeholder="title" type="text" />
-      <label for="name">Book Author</label>
-      <input autocomplete="off" autofocus name="author" placeholder="author" type="text" />
-      <label for="name">Rating</label>
-      <input autocomplete="off" autofocus name="rating" placeholder="rating" type="text" />
-      <button type="submit">Add Book</button>
-    </form>
-    <p><a href="{{ url_for('home') }}">Return to home page</a></p>
-  </body>
-</html>
+{% extends 'layout.html' %}
+{% block title %}Add A New Cafe{% endblock %}
+
+{% block content %}   
+      <form action="{{ url_for('add') }}" method="POST">
+        <ul>
+          <li><label for="name">Book Name</label>
+          <input autocomplete="off" autofocus name="title" placeholder="title" type="text" />
+          </li>
+          <li>
+          <label for="name">Book Author</label>
+          <input autocomplete="off" autofocus name="author" placeholder="author" type="text" />
+          </li>
+          <li>
+          <label for="name">Rating</label>
+          <input autocomplete="off" autofocus name="rating" placeholder="rating" type="text" />
+          </li>
+        </ul>
+        <button type="submit">Add Book</button>
+      </form>
+      <p><a href="{{ url_for('home') }}">Return to home page</a></p>
+{% endblock %}
