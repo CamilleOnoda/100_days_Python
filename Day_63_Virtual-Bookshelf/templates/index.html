@@ -6,12 +6,14 @@
     {% if books_list == [] %}
     <p>This bookshelf is empty.<br>Add a new book!</p>
     {% endif %}
+    <div class="container">
     {% for book in books_list %}
       <ul>
         <li>{{ book.title }} - {{ book.author }} - {{ book.rating }}/10</li>
         <a href="{{ url_for('edit', id=book.id) }}">Edit rating</a>
-        <a href="{{ url_for('delete', id=book.id) }}">Delete book</a>
+        <a id="delete" href="{{ url_for('delete', id=book.id) }}">Delete book</a>
       </ul>
     {% endfor %}
     <a href="{{ url_for('add') }}">Add New Book</a>
+   </div>
 {% endblock %}
