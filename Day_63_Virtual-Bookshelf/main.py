@@ -26,21 +26,18 @@ with app.app_context():
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    books_list = db.session.execute(db.select(Book).order_by(Book.id)).scalars()
+    return render_template('index.html', books_list=books_list)
 
 
 @app.route("/add", methods=['GET','POST'])
 def add():
     if request.method == 'POST':
-        with app.app_context():
-            new_book = Book(title=request.form["title"],author=request.form["author"],
+        new_book = Book(title=request.form["title"],author=request.form["author"],
                             rating=request.form["rating"])
-            db.session.add(new_book)
-            db.session.commit()
-
-            books_list = db.session.execute(db.select(Book).order_by(Book.id)).scalars()
-            return render_template('index.html', books_list=books_list)
-    return render_template('add.html')
+        db.session.add(new_book)
+        db.session.commit()
+        return render_template('add.html')
 
 
 if __name__ == "__main__":
