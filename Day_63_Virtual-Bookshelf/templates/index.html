@@ -2,13 +2,19 @@
 {% block title %}Virtual Bookshelf{% endblock %}
 
 {% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
     <h1>My virtual bookshelf</h1>
-    <table class="table table-hover table-dark table-striped">
+    <table class="table table-hover table-dark table-striped .w-auto">
     <tbody>
     {% if books_list == [] %}
     <p>This bookshelf is empty.<br>Add a new book!</p>
-    {% endif %}
-    <tr>
+    {% endif %}     
+      <th>Title</th>
+      <th>Author</th>
+      <th>Rating</th>
+    <tr> 
       {% for book in books_list %}
           <td>{{ book.title }}</td>
           <td>{{ book.author }}</td>
@@ -19,6 +25,9 @@
     {% endfor %}
     </tbody>
     </table>
-    <a class="btn btn-warning btn-lg" href="{{ url_for('add') }}">Add New Book</a>
+    <a class="btn btn-warning btn-lg" href="{{ url_for('add') }}">Add a new book</a>
+    </div>
+  </div>
+</div>
    
 {% endblock %}
