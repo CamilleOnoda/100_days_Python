@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from flask_bootstrap import Bootstrap5
 import os
 
 
 app = Flask(__name__)
+Bootstrap5(app)
 
 
 SECRET_KEY = os.environ.get("SECRET_KEY") or os.urandom(24)
