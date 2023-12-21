@@ -1,26 +1,40 @@
 from flask import Flask, render_template, request, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
 
 
+# Create flask app and new database
 app = Flask(__name__)
-
-all_books = []
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///virtual-bookshelf.db"
+db = SQLAlchemy()
+db.init_app(app)
+# Create table model
+class Book(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(250), unique=True, nullable=False)
+    author = db.Column(db.String(250), nullable=False)
+    rating = db.Column(db.Float, nullable=False)
+# Create table
+with app.app_context():
+    db.create_all()
 
 
 @app.route('/')
 def home():
-    return render_template('index.html', all_books=all_books)
+    return render_template('index.html')
 
 
 @app.route("/add", methods=['GET','POST'])
 def add():
     if request.method == 'POST':
-        new_book = {
-            "title": request.form["title"],
-            "author": request.form["author"],
-            "rating": request.form["rating"]
-        }
-        all_books.append(new_book) 
-        return redirect(url_for('home'))
+        with app.app_context():
+            new_book = Book(title=request.form["title"],author=request.form["author"],
+                            rating=request.form["rating"])
+            db.session.add(new_book)
+            db.session.commit()
+
+#            result = db.session.execute(db.select(Book).order_by(Book.id))
+#            all_books = result.scalars()
+            return redirect(url_for('home'))
     return render_template('add.html')
 
 
