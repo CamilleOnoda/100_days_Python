@@ -1,9 +1,15 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+import os
 
 
-# Create flask app and new database
 app = Flask(__name__)
+
+
+SECRET_KEY = os.environ.get("SECRET_KEY") or os.urandom(24)
+app.config['SECRET_KEY'] = SECRET_KEY
+
+# Create new database
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///virtual-bookshelf.db"
 db = SQLAlchemy()
 db.init_app(app)
@@ -32,9 +38,8 @@ def add():
             db.session.add(new_book)
             db.session.commit()
 
-#            result = db.session.execute(db.select(Book).order_by(Book.id))
-#            all_books = result.scalars()
-            return redirect(url_for('home'))
+            books_list = db.session.execute(db.select(Book).order_by(Book.id)).scalars()
+            return render_template('index.html', books_list=books_list)
     return render_template('add.html')
 
 
