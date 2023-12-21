@@ -28,13 +28,26 @@ with app.app_context():
     db.create_all()
 
 # Add object to the session
+#with app.app_context():
+#    new_book = Book(id=2,title='Courage to be disliked',author='Koga Fumitake and Ichiro Kishimi',rating=9)
+#    db.session.add(new_book)
+#    db.session.commit()
+
+# Read all records
 with app.app_context():
-    new_book = Book(id=2,title='Courage to be disliked',author='Koga Fumitake and Ichiro Kishimi',rating=9)
-    db.session.add(new_book)
+    result = db.session.execute(db.select(Book).order_by(Book.title))
+    all_books = result.scalars()
+
+# Read a particular record by Query
+with app.app_context():
+    book = db.session.execute(db.select(Book).where(Book.title == 'Courage to be disliked')).scalar()
+    print(book)
+
+# Update a particular record by query
+with app.app_context():
+    book_to_update = db.session.execute(db.select(Book).where(Book.title == "Harry Potter")).scalar()
+    book_to_update.title = "Harry Potter and the Chamber of Secrets"
     db.session.commit()
-
-
-
 
 
 
