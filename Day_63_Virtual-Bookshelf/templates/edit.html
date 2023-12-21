@@ -2,7 +2,7 @@
 {% block title %}Edit rating{% endblock %}
 
 {% block content %}
-<form action="{{ url_for('add') }}" method="POST">
+<form action="{{ url_for('edit') }}" method="POST">
     <p>Book title: {{ book.title }}</p>
     <p>Current rating: {{ book.rating }}</p>
     <input hidden="hidden" name="id" value="{{book.id}}"/>
