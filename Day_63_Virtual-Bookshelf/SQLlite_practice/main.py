@@ -9,7 +9,10 @@ cursor = db.cursor()
 #               "author varchar(250) NOT NULL, "
 #               "rating FLOAT NOT NULL)")
 
-cursor.execute("INSERT INTO books VALUES(1, 'The Courage to be disliked', "
-               "'Koga Fumitaka-Ichiro Kishimi',"
-               "'9.3')")
+#cursor.execute("INSERT INTO books VALUES(1, 'The Courage to be disliked', "
+#               "'Koga Fumitaka-Ichiro Kishimi',"
+#               "'9.3')")
+#db.commit()
+cursor.execute("INSERT INTO books VALUES(2, 'Harry Potter', 'J.K. Rowling', "
+               "'5')")
 db.commit()
