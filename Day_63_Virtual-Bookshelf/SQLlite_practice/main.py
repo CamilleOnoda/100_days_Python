@@ -4,30 +4,32 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String, Float
 
-# Initialize extension
-class Base(DeclarativeBase):
-    pass
-db = SQLAlchemy(model_class=Base)
+# Initialize extension (custom Base class for more complex structures)
+#class Base(DeclarativeBase):
+#    pass
+#db = SQLAlchemy(model_class=Base)
 
-# Configure the extension
+
+# Create a new database
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///new-books-collection.db"
+db = SQLAlchemy()
 db.init_app(app)
 
-# Define Models
+# Create a table Model
 class Book(db.Model):
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    title: Mapped[str] = mapped_column(String(250), unique=True, nullable=False)
-    author: Mapped[str] = mapped_column(String(250), nullable=False)
-    rating: Mapped[float] = mapped_column(Float, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(250), unique=True, nullable=False)
+    author = db.Column(db.String(250), nullable=False)
+    rating = db.Column(db.Float, nullable=False)
 
-# Create the Table
+# Create the table
 with app.app_context():
     db.create_all()
 
 # Add object to the session
 with app.app_context():
-    new_book = Book(id=1,title='Harry Potter',author='J.K. Rowling',rating=5.3)
+    new_book = Book(id=2,title='Courage to be disliked',author='Koga Fumitake and Ichiro Kishimi',rating=9)
     db.session.add(new_book)
     db.session.commit()
 
