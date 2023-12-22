@@ -5,6 +5,7 @@ body {
     
 a {
     color: #ffc107;
+    text-decoration: none;
 }
 
 #delete,#edit {
