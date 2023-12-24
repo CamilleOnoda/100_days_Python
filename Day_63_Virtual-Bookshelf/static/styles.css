@@ -7,10 +7,6 @@ a {
     color: #ffc107;
     text-decoration: none;
 }
-
-#delete,#edit {
-    padding: 0;
-}
     
 ul,li {
     list-style: none;
@@ -29,6 +25,14 @@ input {
 
 button {
     margin-bottom: 20px;
+}
+
+label {
+    font-weight: bold;
+}
+
+#delete,#edit {
+    padding: 0;
 }
 
 .jumbotron {
