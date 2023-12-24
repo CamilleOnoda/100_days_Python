@@ -21,7 +21,7 @@ Base = declarative_base()
 
 # Create a base model to support emoji (utf8mb4)
 class BaseModel(Base):
-    __tablename__ = 'book'
+    __tablename__ = 'virtual-bookshelf'
     __abstract__ = True
     __table_args__ = {
         'mysql_engine': 'InnoDB',
