@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap5
+from sqlalchemy.ext.declarative import declarative_base
 import os
 
 
@@ -16,12 +17,24 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///virtual-bookshelf.db"
 db = SQLAlchemy()
 db.init_app(app)
 
+Base = declarative_base()
+
+# Create a base model to support emoji (utf8mb4)
+class BaseModel(Base):
+    __tablename__ = 'book'
+    __abstract__ = True
+    __table_args__ = {
+        'mysql_engine': 'InnoDB',
+        'mysql_charset': 'utf8mb4'
+    }
+
+
 # Create table model
-class Book(db.Model):
+class Book(BaseModel, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250), unique=True, nullable=False)
     author = db.Column(db.String(250), nullable=False)
-    rating = db.Column(db.Float, nullable=False)
+    rating = db.Column(db.String(250), nullable=False)
 
 # Create table
 with app.app_context():
