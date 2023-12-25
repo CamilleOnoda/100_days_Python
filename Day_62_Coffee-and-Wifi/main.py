@@ -1,13 +1,8 @@
-from enum import unique
-from flask import Flask, redirect, render_template, url_for
+from flask import Flask, redirect, render_template, url_for, request
 from flask_bootstrap import Bootstrap5
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Nullable
 from sqlalchemy.ext.declarative import declarative_base
-from flask_wtf import FlaskForm
-from wtforms import SelectMultipleField, SubmitField, SelectField
-from wtforms.validators import DataRequired, URL
-import csv
 import os
 
 
@@ -33,7 +28,7 @@ class BaseModel(Base):
     }
 
 # Create table model
-class CafeForm(BaseModel, db.Model):
+class Cafe(BaseModel, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     cafe = db.Column(db.String(250), unique=True, nullable=False)
     city = db.Column(db.String(250), nullable=False)
@@ -45,30 +40,9 @@ class CafeForm(BaseModel, db.Model):
     wifi = db.Column(db.String(250), nullable=False)
     power = db.Column(db.String(250), nullable=False)
 
-#    closed = SelectMultipleField('Closing days', choices=[('Open everyday','Open everyday'),
-#                                                          ('Monday','Monday'),
-#                                                          ('Tuesday','Tuesday'),
-#                                                          ('Wednesday','Wednesday'),
-#                                                          ('Thursday','Thursday'),
-#                                                          ('Friday','Friday'), 
-#                                                          ('Saturday','Saturday'),
-#                                                          ('Sunday','Sunday')],
-#                                                          )
-#    sweet = SelectField('Food rating', choices=['🍩','🍩🍩','🍩🍩🍩',
-#                                                   '🍩🍩🍩🍩','🍩🍩🍩🍩🍩'], 
-#                                                   )
-#    coffee = SelectField('Coffee rating', choices=['☕','☕☕','☕☕☕',
-#                                                   '☕☕☕☕','☕☕☕☕☕'], 
-#                                                   )
-#    wifi = SelectField('Wifi strength rating', choices=['✘','💪','💪💪','💪💪💪',
-#                                                   '💪💪💪💪','💪💪💪💪💪'], 
-#                                                   )
-#   power = SelectField('Power socket availability', choices=['✘','🔌','🔌🔌','🔌🔌🔌',
-#                                                   '🔌🔌🔌🔌','🔌🔌🔌🔌🔌'], 
-#                                                   )
-#    submit = SubmitField('Submit')
 with app.app_context():
     db.create_all()
+
 
 @app.route("/")
 def home():
@@ -76,30 +50,25 @@ def home():
 
 @app.route('/cafes')
 def cafes():
-    with open('cafe-data.csv', newline='', encoding='utf-8') as csv_file:
-        csv_data = csv.reader(csv_file, delimiter=',')
-        list_of_rows = []
-        for row in csv_data:
-            list_of_rows.append(row)
-    return render_template('cafes.html', cafes=list_of_rows)
+    cafes_list = list(db.session.execute(db.select(Cafe).order_by(Cafe.city)).scalars())
+    return render_template('cafes.html', cafes_list=cafes_list)
 
 @app.route('/add', methods=['GET', 'POST'])
-def add_cafe():
-    form = CafeForm()
-    closed_days = ' & '.join(list(form.closed.data or []))
-    if form.validate_on_submit():
-        with open('cafe-data.csv', mode='a', encoding='utf-8') as csv_file:
-            csv_file.write(f"\n{form.cafe.data},"
-                           f"{form.city.data},"
-                           f"{form.location.data},"
-                           f"{form.open_hours.data},"
-                           f"{closed_days},"
-                           f"{form.sweet.data},"
-                           f"{form.coffee.data},"
-                           f"{form.wifi.data},"
-                           f"{form.power.data}")
-            return redirect(url_for('cafes'))
-    return render_template('add.html', form=form)
+def add():
+#    closed_days = ' & '.join(list(form.closed.data or []))
+    if request.method == 'POST':
+          new_cafe = Cafe(cafe=request.form['cafe'],city=request.form['city'],
+                          location=request.form['location'],
+                          open_hours=request.form['open_hours'],
+                          closed=request.form['closed'],
+                          sweets=request.form['sweets'],
+                          coffee=request.form['coffee'],
+                          wifi=request.form['wifi'],
+                          power=request.form['power'])
+          db.session.add(new_cafe)
+          db.session.commit()
+          return redirect(url_for('cafes'))
+    return render_template('add.html')
 
 
 if __name__ == '__main__':
