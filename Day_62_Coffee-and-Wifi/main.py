@@ -1,5 +1,7 @@
 from flask import Flask, redirect, render_template, url_for
 from flask_bootstrap import Bootstrap5
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.ext.declarative import declarative_base
 from flask_wtf import FlaskForm
 from wtforms import SelectMultipleField, StringField, SubmitField, SelectField
 from wtforms.validators import DataRequired, URL
@@ -12,6 +14,11 @@ Bootstrap5(app)
 
 SECRET_KEY = os.environ.get("SECRET_KEY") or os.urandom(24)
 app.config['SECRET_KEY'] = SECRET_KEY
+
+#Create new database
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///coffee-wifi.db"
+db = SQLAlchemy()
+db.init_app(app)
 
 
 class CafeForm(FlaskForm):
