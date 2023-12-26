@@ -10,6 +10,15 @@ a {
     color: #ffc107;
 }
 
+#form {
+  display: inline-grid;
+  width: fit-content;
+}
+
+label {
+  font-weight: bold;
+}
+
 .jumbotron {
   display: flex;
   align-items: center;
