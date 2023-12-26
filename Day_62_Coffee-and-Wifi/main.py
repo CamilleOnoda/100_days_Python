@@ -35,7 +35,7 @@ class Cafe(BaseModel, db.Model):
     location = db.Column(db.String(250), unique=True, nullable=False)
     open_hours = db.Column(db.String(250), nullable=False )
     closed = db.Column(db.String(250), nullable=False)
-    sweet = db.Column(db.String(250), nullable=False)
+    sweets = db.Column(db.String(250), nullable=False)
     coffee = db.Column(db.String(250), nullable=False)
     wifi = db.Column(db.String(250), nullable=False)
     power = db.Column(db.String(250), nullable=False)
@@ -57,14 +57,15 @@ def cafes():
 def add():
 #    closed_days = ' & '.join(list(form.closed.data or []))
     if request.method == 'POST':
-          new_cafe = Cafe(cafe=request.form['cafe'],city=request.form['city'],
-                          location=request.form['location'],
-                          open_hours=request.form['open_hours'],
-                          closed=request.form['closed'],
-                          sweets=request.form['sweets'],
-                          coffee=request.form['coffee'],
-                          wifi=request.form['wifi'],
-                          power=request.form['power'])
+          new_cafe = Cafe(cafe=request.form["cafe"],
+                          city=request.form["city"],
+                          location=request.form["location"],
+                          open_hours=request.form["open_hours"],
+                          closed=request.form["closed"],
+                          sweets=request.form["sweets"],
+                          coffee=request.form["coffee"],
+                          wifi=request.form["wifi"],
+                          power=request.form["power"])
           db.session.add(new_cafe)
           db.session.commit()
           return redirect(url_for('cafes'))
