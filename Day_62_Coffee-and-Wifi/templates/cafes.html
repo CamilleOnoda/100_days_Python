@@ -39,14 +39,14 @@
                 <td>{{ cafe.coffee }}</td>
                 <td>{{ cafe.wifi }}</td>
                 <td>{{ cafe.power }}</td>
+                <td><a class="btn btn-warning btn-m" href="{{ url_for('delete', id=cafe.id) }}">
+                  Delete</a></td>
             {% endfor %}
             </tr>
           </tbody>
   	  </table>
       <a class="btn btn-warning btn-m" href="{{ url_for('add') }}">
         Add a new cafe</a>
-      <a class="btn btn-warning btn-m" href="{{ url_for('delete',id=cafe.id) }}">
-        Delete cafe</a>
       <a class="btn btn-warning btn-m" href="{{ url_for('home') }}">
         Return to home page</a>
     </div>
