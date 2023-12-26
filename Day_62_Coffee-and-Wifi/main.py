@@ -1,7 +1,6 @@
 from flask import Flask, redirect, render_template, url_for, request
 from flask_bootstrap import Bootstrap5
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Nullable
 from sqlalchemy.ext.declarative import declarative_base
 import os
 
@@ -43,7 +42,7 @@ class Cafe(BaseModel, db.Model):
 with app.app_context():
     db.create_all()
 
-
+# Flask routes
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -55,7 +54,6 @@ def cafes():
 
 @app.route('/add', methods=['GET', 'POST'])
 def add():
-#    closed_days = ' & '.join(list(form.closed.data or []))
     if request.method == 'POST':
           new_cafe = Cafe(cafe=request.form["cafe"],
                           city=request.form["city"],
@@ -70,6 +68,14 @@ def add():
           db.session.commit()
           return redirect(url_for('cafes'))
     return render_template('add.html')
+
+@app.route('/delete')
+def delete():
+    cafe_id = request.args.get('id')
+    cafe_to_delete = db.get_or_404(Cafe, cafe_id)
+    db.session.delete(cafe_to_delete)
+    db.session.commit()
+    return redirect(url_for('cafes'))
 
 
 if __name__ == '__main__':
