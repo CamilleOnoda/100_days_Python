@@ -1,6 +1,3 @@
-/* This CSS file will need to be added to the styling of 
-your web pages for the styles to be rendered. */
-
 body {
 background-color: #333;
 color: white;
@@ -10,6 +7,7 @@ a {
     color: #ffc107;
 }
 
+/*Form for the add.html*/
 #form {
   display: inline-grid;
   width: fit-content;
@@ -19,11 +17,13 @@ label {
   font-weight: bold;
 }
 
+/*Buttons on every page*/
 .btn {
   margin-bottom: 10px;
   margin-top: 10px;
 }
 
+/*Home page*/
 .jumbotron {
   display: flex;
   align-items: center;
