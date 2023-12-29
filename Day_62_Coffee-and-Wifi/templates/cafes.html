@@ -41,6 +41,8 @@
                 <td>{{ cafe.power }}</td>
                 <td><a class="btn btn-warning btn-m" href="{{ url_for('delete', id=cafe.id) }}">
                   Delete</a></td>
+                <td><a class="btn btn-warning btn-m" href="{{ url_for('edit', id=cafe.id) }}">
+                  Edit</a></td>
             {% endfor %}
             </tr>
           </tbody>
