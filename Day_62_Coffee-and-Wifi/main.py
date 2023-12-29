@@ -94,13 +94,13 @@ def edit():
         cafe_to_edit.city = request.form["city"]
         cafe_to_edit.location = request.form["location"]
         cafe_to_edit.open_hours = request.form["open_hours"]
-        cafe_to_edit.closed = request.form["closed"]
+        cafe_to_edit.closed = ','.join(request.form.getlist("closed"))
         cafe_to_edit.sweets = request.form["sweets"]
         cafe_to_edit.coffee = request.form["coffee"]
         cafe_to_edit.wifi = request.form["wifi"]
         cafe_to_edit.power = request.form["power"]
         db.session.commit()
-        return redirect(url_for('cafe'))
+        return redirect(url_for('cafes'))
     cafe_id = request.args.get('id')
     cafe_selected = db.get_or_404(Cafe, cafe_id)
     return render_template('edit.html', cafe=cafe_selected)
