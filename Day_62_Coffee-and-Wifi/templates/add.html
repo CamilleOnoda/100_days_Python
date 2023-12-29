@@ -18,8 +18,18 @@
           <label>Opening hours</label>
             <input autofocus name="open_hours" 
             placeholder="Opening hours (e.g. 8AM - 5PM)" type="text">
-          <label>Closed</label><input name="closed" placeholder="Closing days"
-            type="text">
+          <label>Closed</label>
+            <select name="closed" multiple>
+            <option disabled selected>Closing days</option>
+            <option value="Always open">Always open</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+            <option value="Sunday">Sunday</option>
+            </select>    
           <label>Sweets</label>
             <select name="sweets">
             <option disabled selected>Sweets quality</option>
