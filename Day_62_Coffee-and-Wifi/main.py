@@ -40,7 +40,6 @@ class Cafe(BaseModel, db.Model):
     coffee = db.Column(db.String(250), nullable=False)
     wifi = db.Column(db.String(250), nullable=False)
     power = db.Column(db.String(250), nullable=False)
-    verified = db.Column(db.Boolean, default=False)
 
 
 with app.app_context():
@@ -66,7 +65,7 @@ def add():
                           city=request.form["city"],
                           location=request.form["location"],
                           open_hours=request.form["open_hours"],
-                          closed=request.form["closed"],
+                          closed=','.join(request.form.getlist("closed")),
                           sweets=request.form["sweets"],
                           coffee=request.form["coffee"],
                           wifi=request.form["wifi"],
@@ -86,12 +85,25 @@ def delete():
     return redirect(url_for('cafes'))
 
 
-@app.route('/edit')
+@app.route('/edit', methods=['GET', 'POST'])
 def edit():
+    if request.method == 'POST':
+        cafe_id = request.form['id']
+        cafe_to_edit = db.get_or_404(Cafe, cafe_id)
+        cafe_to_edit.cafe = request.form["cafe"]
+        cafe_to_edit.city = request.form["city"]
+        cafe_to_edit.location = request.form["location"]
+        cafe_to_edit.open_hours = request.form["open_hours"]
+        cafe_to_edit.closed = request.form["closed"]
+        cafe_to_edit.sweets = request.form["sweets"]
+        cafe_to_edit.coffee = request.form["coffee"]
+        cafe_to_edit.wifi = request.form["wifi"]
+        cafe_to_edit.power = request.form["power"]
+        db.session.commit()
+        return redirect(url_for('cafe'))
     cafe_id = request.args.get('id')
-    cafe_to_edit = db.get_or_404(Cafe, cafe_id)
-    cafe_to_edit.verified = True
-    db.session.commit()
+    cafe_selected = db.get_or_404(Cafe, cafe_id)
+    return render_template('edit.html', cafe=cafe_selected)
 
 
 if __name__ == '__main__':
