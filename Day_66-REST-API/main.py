@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.exceptions import HTTPException, NotFound
-from sqlalchemy.exc import SQLAlchemyError
 import random
 
 
