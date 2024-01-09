@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.exceptions import HTTPException
+from werkzeug.exceptions import HTTPException, NotFound
+from sqlalchemy.exc import SQLAlchemyError
 import random
 
 
@@ -84,34 +85,65 @@ def find_cafe():
     else:
         abort(404, description=f"No cafes found for location: {query_location}")
 
-# Error handling
-@app.errorhandler(HTTPException)
-def handle_exception(e):
-    return jsonify({"message": e.description}), e.code
-
 
 # HTTP POST - Create Record
 @app.route("/add", methods=['POST'])
 def add_new_cafe():
-    new_cafe=Cafe(
-        name=request.form.get("name"),
-        map_url=request.form.get("map_url"),
-        img_url=request.form.get("img_url"),
-        location=request.form.get("location"),
-        seats=request.form.get("seats"),
-        has_toilet=bool(request.form.get("toilet")),
-        has_wifi=bool(request.form.get("wifi")),
-        has_sockets=bool(request.form.get("sockets")),
-        can_take_calls=bool(request.form.get("calls")),
-        coffee_price=request.form.get("coffee_price"),
-    )
-    db.session.add(new_cafe)
-    db.session.commit()
-    return jsonify(response={"success": "Successfully added the new cafe."})
+    api_key = request.args.get("api-key")
+    if api_key == "TopSecretAPIKey":
+        cafe_name = request.form.get("name")
+        existing_cafe = Cafe.query.filter_by(name=cafe_name).first()
+        if existing_cafe:
+            abort(409, description=f"A cafe with the name '{cafe_name}' already exists.")          
+        new_cafe=Cafe(
+            name=cafe_name,
+            map_url=request.form.get("map_url"),
+            img_url=request.form.get("img_url"),
+            location=request.form.get("location"),
+            seats=request.form.get("seats"),
+            has_toilet=bool(request.form.get("toilet")),
+            has_wifi=bool(request.form.get("wifi")),
+            has_sockets=bool(request.form.get("sockets")),
+            can_take_calls=bool(request.form.get("calls")),
+            coffee_price=request.form.get("coffee_price"),
+        )
+        db.session.add(new_cafe)
+        db.session.commit()
+        return jsonify(response={"success": "Successfully added the new cafe."})
+    else:
+        abort(403, description="Sorry, that's not allowed. Make sure you have the correct api-key."), 403
 
 # HTTP PUT/PATCH - Update Record
+@app.route("/update-price/<int:cafe_id>", methods=['PATCH'])
+def patch_new_price(cafe_id):
+    new_price = request.args.get("new_price")
+    cafe = db.get_or_404(Cafe, cafe_id)
+    if cafe:
+        cafe.coffee_price = new_price
+        db.session.commit()
+        return jsonify(response={"success": "Sucessfully updated the price."}), 200
+    else:
+        abort(404, description=f"Sorry, a cafe with id: {cafe_id}, was not found in the database")
 
 # HTTP DELETE - Delete Record
+@app.route("/report-closed/<int:cafe_id>", methods=['DELETE'])
+def delete_cafe(cafe_id):
+    api_key = request.args.get("api-key")
+    if api_key == "TopSecretAPIKey":
+        try:
+            cafe = db.get_or_404(Cafe, cafe_id)
+            db.session.delete(cafe)
+            db.session.commit()
+            return jsonify(response={"success": "Successfully deleted this cafe from the database."}), 200  
+        except NotFound:
+            abort(404, description="Sorry, a cafe with that id was not found in the database."), 404
+    else:
+        abort(403, description="Sorry, that's not allowed. Make sure you have the correct api-key."), 403
+
+# Error handling
+@app.errorhandler(HTTPException)
+def handle_exception(e):
+    return jsonify({"message": e.description}), e.code
 
 
 if __name__ == '__main__':
