@@ -1,18 +1,24 @@
+from importlib.metadata import files
 from flask import Flask, render_template, request, url_for, redirect, session, flash, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
+import os
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret-key-goes-here'
+SECRET_KEY = os.environ.get("SECRET_KEY") or os.urandom(24)
+app.config['SECRET_KEY'] = SECRET_KEY
 
-# CONNECT TO DB
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 db = SQLAlchemy()
 db.init_app(app)
 
 
-# CREATE TABLE IN DB
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True)
@@ -32,9 +38,12 @@ def home():
 @app.route('/register', methods=['GET','POST'])
 def register():
     if request.method == 'POST':
+        hashed_salted_password = generate_password_hash(request.form.get('password'),
+                                                        method='pbkdf2:sha256',
+                                                        salt_length=8)
         new_user = User(name=request.form.get('name'),
                         email=request.form.get('email'),
-                        password=request.form.get('password'))
+                        password=hashed_salted_password)
         session["name"] = new_user.name
         db.session.add(new_user)
         db.session.commit()
@@ -59,7 +68,7 @@ def logout():
 
 @app.route('/download')
 def download():
-    pass
+    return send_from_directory('static', path='files/cheat_sheet.pdf')
 
 
 if __name__ == "__main__":
