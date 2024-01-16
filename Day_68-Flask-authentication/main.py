@@ -36,7 +36,9 @@ with app.app_context():
 
 @app.route('/')
 def home():
-    return render_template("index.html")
+    if current_user.is_authenticated:
+        return render_template("index.html", logged_in=True)
+    return render_template('index.html', logged_in=False)
 
 
 @app.route('/register', methods=['GET','POST'])
@@ -55,12 +57,12 @@ def register():
         new_user = User(name=request.form.get('name'),
                         email=request.form.get('email'),
                         password=hashed_salted_password)
-        session["name"] = new_user.name
         db.session.add(new_user)
         db.session.commit()
         login_user(new_user)
+        session["name"] = new_user.name
         return redirect(url_for('secrets'))
-    return render_template("register.html")
+    return render_template("register.html", logged_in=current_user.is_authenticated)
 
 
 @app.route('/login', methods=['GET','POST'])
@@ -77,14 +79,15 @@ def login():
             flash("Incorrect password, please try again.")
         else:
             login_user(user)
+            session["name"] = user.name
             return redirect(url_for('secrets'))
-    return render_template("login.html")
+    return render_template("login.html", logged_in=current_user.is_authenticated)
 
 
 @app.route('/secrets')
 @login_required
 def secrets():
-    return render_template("secrets.html", name=session["name"])
+    return render_template("secrets.html", name=session["name"], logged_in=True)
 
 
 @app.route('/logout')
